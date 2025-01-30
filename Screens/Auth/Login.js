@@ -22,7 +22,7 @@ const Login = () => {
             return;
         }
         // Handle login logic here
-        navigation.navigate("SignUp");
+        navigation.navigate("Home");
         Alert.alert("Success", `Welcome, ${email}!`);
     };
     const handleSignUp = () => {
