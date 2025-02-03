@@ -7,12 +7,13 @@ import {
     TouchableOpacity,
     Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useNavigation } from "@react-navigation/native";
 
 const Home = () => {
     const navigation = useNavigation();
-    const [userName, setUserName] = useState("John Doe"); // Replace with dynamic user data
+    const [userName, setUserName] = useState("John Doe!");
     const [elections, setElections] = useState([
         // Replace with data fetched from the backend
         {
@@ -22,15 +23,23 @@ const Home = () => {
         },
         { id: "2", name: "Local Council Election", deadline: "Feb 15, 2025" },
     ]);
+    const clearStorage = async () => {
+        try {
+            await AsyncStorage.clear();
+            console.log("AsyncStorage cleared successfully!");
+        } catch (error) {
+            console.error("Error clearing AsyncStorage:", error);
+        }
+    };
 
-    // Mock logout function
+    //  logout function
     const handleLogout = () => {
+        clearStorage(); // remove this before deploying
         Alert.alert("Logout", "Are you sure you want to log out?", [
             { text: "Cancel", style: "cancel" },
             { text: "Logout", onPress: () => navigation.replace("Login") },
         ]);
     };
-
     const renderElectionItem = ({ item }) => (
         <TouchableOpacity
             style={styles.electionItem}

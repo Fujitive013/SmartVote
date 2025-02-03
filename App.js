@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./Screens/Auth/Login";
 import SignUp from "./Screens/Auth/Signup";
 import Home from "./Screens/Dashboard/Home";
+import ElectionDetails from "./Screens/ElectionDetails";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -29,6 +30,13 @@ export default function App() {
                     component={Home}
                     options={{
                         headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="ElectionDetails"
+                    component={ElectionDetails}
+                    options={{
+                        headerShown: true,
                     }}
                 />
             </Stack.Navigator>
