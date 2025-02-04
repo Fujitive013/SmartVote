@@ -5,6 +5,7 @@ import Login from "./Screens/Auth/Login";
 import SignUp from "./Screens/Auth/Signup";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
+import Results from "./Screens/Results";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -33,8 +34,16 @@ export default function App() {
                     }}
                 />
                 <Stack.Screen
-                    name="ElectionDetails"
+                    name="Election Details"
                     component={ElectionDetails}
+                    options={{
+                        headerShown: true,
+                    }}
+                />
+
+                <Stack.Screen
+                    name="Results"
+                    component={Results}
                     options={{
                         headerShown: true,
                     }}

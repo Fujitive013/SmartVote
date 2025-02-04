@@ -21,12 +21,26 @@ const Login = () => {
             Alert.alert("Error", "Please enter both email and password.");
             return;
         }
-        // Handle login logic here
-        navigation.navigate("Home");
-        Alert.alert("Success", `Welcome, ${email}!`);
+        if (email == "user1@gmail.com" && password == "1") {
+            Alert.alert("Success", `Welcome, James Bond!`);
+            navigation.navigate("Home", { userName: "James Bond" });
+        } else if (email == "user2@gmail.com" && password == "2") {
+            Alert.alert("Success", `Welcome, Van Gogh!`);
+            navigation.navigate("Home", { userName: "Van Gogh" });
+        } else {
+            Alert.alert(
+                "Login Failed",
+                "Incorrect email or password. Please try again."
+            );
+        }
     };
+
     const handleSignUp = () => {
         navigation.navigate("SignUp");
+    };
+
+    const handleViewResults = () => {
+        navigation.navigate("Results");
     };
 
     return (
@@ -74,7 +88,7 @@ const Login = () => {
                 <View style={styles.loginCardFooter}>
                     <TouchableOpacity
                         style={styles.guestButton}
-                        onPress={handleLogin}
+                        onPress={handleViewResults}
                     >
                         <Text style={styles.guestText}>View Results</Text>
                     </TouchableOpacity>

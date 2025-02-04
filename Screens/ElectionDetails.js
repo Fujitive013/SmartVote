@@ -6,6 +6,9 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     Alert,
+    ImageBackground,
+    ScrollView,
+    Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -14,7 +17,7 @@ const ElectionDetails = ({ route }) => {
     const [election, setElection] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
-    const [voteCounts, setVoteCounts] = useState({}); // Track vote counts for each candidate
+    const [voteCounts, setVoteCounts] = useState({});
 
     useEffect(() => {
         const fetchElectionDetails = async () => {
@@ -28,31 +31,35 @@ const ElectionDetails = ({ route }) => {
                     candidates: [
                         {
                             id: "a1",
-                            name: "John Smith",
+                            name: "Maria Dela Cruz",
                             party: "Progressive Party",
+                            image: require("../assets/user.png"),
                         },
                         {
                             id: "b2",
-                            name: "Sarah Johnson",
+                            name: "Juan Dela Cruz",
                             party: "Liberty Party",
+                            image: require("../assets/user.png"),
                         },
                     ],
                 },
                 2: {
                     id: "2",
-                    name: "Local Council Election",
+                    name: "Local Barangay Election",
                     deadline: "Feb 15, 2025",
-                    description: "Vote for your local council representative.",
+                    description: "Vote for your local Barangay Captain.",
                     candidates: [
                         {
                             id: "c3",
-                            name: "Emily Davis",
+                            name: "Diana Penduko",
                             party: "Community First",
+                            image: require("../assets/user.png"),
                         },
                         {
                             id: "d4",
-                            name: "Michael Brown",
+                            name: "Pedro Penduko",
                             party: "People's Voice",
+                            image: require("../assets/user.png"),
                         },
                     ],
                 },
@@ -154,7 +161,9 @@ const ElectionDetails = ({ route }) => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#007bff" />
-                <Text>Loading election details...</Text>
+                <Text style={styles.loadingText}>
+                    Loading election details...
+                </Text>
             </View>
         );
     }
@@ -176,37 +185,43 @@ const ElectionDetails = ({ route }) => {
             <Text style={styles.description}>{election.description}</Text>
 
             <Text style={styles.candidateTitle}>Candidates:</Text>
-            {election.candidates.map((candidate) => (
-                <View key={candidate.id} style={styles.candidateItem}>
-                    <View style={styles.candidateInfo}>
-                        <Text style={styles.candidateName}>
-                            {candidate.name}
-                        </Text>
-                        <Text style={styles.candidateParty}>
-                            {candidate.party}
-                        </Text>
-                        <Text style={styles.voteCountText}>
-                            Votes: {voteCounts[candidate.id] || 0}
-                        </Text>
+            <ScrollView>
+                {election.candidates.map((candidate) => (
+                    <View key={candidate.id} style={styles.candidateItem}>
+                        <Image
+                            source={candidate.image}
+                            style={styles.candidateImage}
+                        />
+                        <View style={styles.candidateInfo}>
+                            <Text style={styles.candidateName}>
+                                {candidate.name}
+                            </Text>
+                            <Text style={styles.candidateParty}>
+                                {candidate.party}
+                            </Text>
+                            <Text style={styles.voteCountText}>
+                                Votes: {voteCounts[candidate.id] || 0}
+                            </Text>
+                        </View>
+                        <TouchableOpacity
+                            style={[
+                                styles.voteButton,
+                                selectedCandidate
+                                    ? styles.disabledButton
+                                    : styles.activeButton,
+                            ]}
+                            onPress={() => handleVote(candidate)}
+                            disabled={!!selectedCandidate}
+                        >
+                            <Text style={styles.voteButtonText}>
+                                {selectedCandidate?.id === candidate.id
+                                    ? "Voted"
+                                    : "Vote"}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                        style={[
-                            styles.voteButton,
-                            selectedCandidate
-                                ? styles.disabledButton
-                                : styles.activeButton,
-                        ]}
-                        onPress={() => handleVote(candidate)}
-                        disabled={!!selectedCandidate}
-                    >
-                        <Text style={styles.voteButtonText}>
-                            {selectedCandidate?.id === candidate.id
-                                ? "Voted"
-                                : "Vote"}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            ))}
+                ))}
+            </ScrollView>
         </View>
     );
 };
@@ -214,57 +229,80 @@ const ElectionDetails = ({ route }) => {
 export default ElectionDetails;
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+        resizeMode: "cover",
+    },
     container: {
         flex: 1,
-        backgroundColor: "#f8f9fa",
         padding: 20,
+        backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
     },
     loadingContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
+    loadingText: {
+        fontSize: 16,
+        color: "#333",
+        marginTop: 10,
+    },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: "bold",
         marginBottom: 10,
+        color: "#333",
+        textAlign: "center",
     },
     deadline: {
         fontSize: 16,
         color: "#dc3545",
         marginBottom: 10,
+        textAlign: "center",
     },
     description: {
         fontSize: 16,
-        marginBottom: 15,
+        marginBottom: 20,
+        color: "#555",
+        textAlign: "center",
     },
     candidateTitle: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: "bold",
-        marginBottom: 10,
+        marginBottom: 15,
+        color: "#333",
     },
     candidateItem: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#ffffff",
-        padding: 10,
-        borderRadius: 5,
-        marginBottom: 8,
+        borderRadius: 12,
+        padding: 15,
+        marginBottom: 15,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 2,
+        elevation: 3,
+    },
+    candidateImage: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        marginRight: 15,
     },
     candidateInfo: {
         flex: 1,
     },
     candidateName: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "bold",
+        color: "#333",
     },
     candidateParty: {
         fontSize: 14,
         color: "#6c757d",
+        marginBottom: 5,
     },
     voteCountText: {
         fontSize: 14,
@@ -273,7 +311,7 @@ const styles = StyleSheet.create({
     voteButton: {
         paddingVertical: 8,
         paddingHorizontal: 15,
-        borderRadius: 5,
+        borderRadius: 8,
         alignItems: "center",
     },
     activeButton: {

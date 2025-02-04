@@ -15,6 +15,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigation = useNavigation();
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleLogin = () => {
         if (!email || !password) {
@@ -27,6 +28,10 @@ const SignUp = () => {
 
     const handleBack = () => {
         navigation.goBack();
+    };
+
+    const handleViewResults = () => {
+        Alert.alert("Error", "Under Construction.");
     };
 
     return (
@@ -57,6 +62,14 @@ const SignUp = () => {
                     value={password}
                     onChangeText={setPassword}
                 />
+                <Text style={styles.label}> Confirm Password</Text>
+                <TextInput
+                    placeholder="Password"
+                    style={styles.input}
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                />
                 <TouchableOpacity
                     style={styles.signUpButton}
                     onPress={handleLogin}
@@ -76,7 +89,7 @@ const SignUp = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.guestButton}
-                        onPress={handleLogin}
+                        onPress={handleViewResults}
                     >
                         <Text style={styles.guestText}>View Results</Text>
                     </TouchableOpacity>
