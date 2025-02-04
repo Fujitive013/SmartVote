@@ -6,39 +6,19 @@ import {
     FlatList,
     TouchableOpacity,
     Alert,
-    ImageBackground,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import axios from "axios";
+import Constants from "expo-constants";
 
-const Home = ({ route }) => {
+const Home = () => {
     const navigation = useNavigation();
-    const { userName } = route.params;
-    const [elections, setElections] = useState([
-        {
-            id: "1",
-            name: "Presidential Election 2025",
-            deadline: "Jan 30, 2025",
-        },
-        {
-            id: "2",
-            name: "Local Barangay Election",
-            deadline: "Feb 15, 2025",
-        },
-    ]);
-
-    const getGreeting = () => {
-        const currentHour = new Date().getHours();
-        if (currentHour < 12) {
-            return "Good Morning";
-        } else if (currentHour < 18) {
-            return "Good Afternoon";
-        } else {
-            return "Good Evening";
-        }
-    };
-
+    const [elections, setElections] = useState([]);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY;
     const clearStorage = async () => {
         try {
             await AsyncStorage.clear();
@@ -47,27 +27,77 @@ const Home = ({ route }) => {
             console.error("Error clearing AsyncStorage:", error);
         }
     };
+    useEffect(() => {
+        fetchElections();
+        fetchUserData();
+    }, []);
 
-    //  logout function
+    const fetchElections = async () => {
+        try {
+            const response = await axios.get(`${API_KEY}/elections`);
+            setElections(response.data);
+        } catch (error) {
+            console.error("Error fetching elections:", error);
+        }
+    };
+
+    const fetchUserData = async () => {
+        try {
+            const userData = await AsyncStorage.getItem("userData");
+            if (userData) {
+                const parsedData = JSON.parse(userData);
+                setUser(parsedData);
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
+
+    const getGreeting = () => {
+        const currentHour = new Date().getHours();
+        if (currentHour < 12) return "Good Morning";
+        if (currentHour < 18) return "Good Afternoon";
+        return "Good Evening";
+    };
+
     const handleLogout = () => {
-        clearStorage(); // remove this before deploying
         Alert.alert("Logout", "Are you sure you want to log out?", [
             { text: "Cancel", style: "cancel" },
-            { text: "Logout", onPress: () => navigation.replace("Login") },
+            {
+                text: "Logout",
+                onPress: async () => {
+                    await AsyncStorage.removeItem("userData");
+                    navigation.replace("Login");
+                },
+            },
         ]);
+        clearStorage(); // remove this before deploying
     };
 
     const renderElectionItem = ({ item }) => (
         <TouchableOpacity
             style={styles.electionItem}
             onPress={() =>
-                navigation.navigate("Election Details", { electionId: item.id })
+                navigation.navigate("Election Details", {
+                    electionId: item._id,
+                })
             }
         >
             <View style={styles.electionContent}>
                 <Text style={styles.electionName}>{item.name}</Text>
                 <Text style={styles.electionDeadline}>
-                    Deadline: {item.deadline}
+                    {`End: ${formatDate(item.end_date)}`}
                 </Text>
             </View>
             <View style={styles.voteNowContainer}>
@@ -78,46 +108,47 @@ const Home = ({ route }) => {
     );
 
     return (
-        <ImageBackground
-            source={require("../../assets/background.jpg")} // Add your background image
-            style={styles.backgroundImage}
-            resizeMode="cover"
-        >
-            <View style={styles.container}>
+        <View style={styles.container}>
+            {loading ? (
+                <Text style={styles.welcomeText}>Loading...</Text>
+            ) : (
                 <Text style={styles.welcomeText}>
-                    {getGreeting()}, {userName}!
+                    {getGreeting()}, {user?.first_name}!
                 </Text>
+            )}
 
-                <Text style={styles.sectionTitle}>Ongoing Elections</Text>
+            <Text style={styles.sectionTitle}>Ongoing Elections</Text>
+            {elections.length === 0 ? (
+                <Text style={styles.noElectionsText}>
+                    No ongoing elections available.
+                </Text>
+            ) : (
                 <FlatList
                     data={elections}
                     renderItem={renderElectionItem}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item._id}
                     contentContainerStyle={styles.electionList}
                 />
+            )}
 
-                <TouchableOpacity
-                    style={styles.logoutButton}
-                    onPress={handleLogout}
-                >
-                    <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
-        </ImageBackground>
+            <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={handleLogout}
+            >
+                <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
-    backgroundImage: {
-        flex: 1,
-        resizeMode: "cover",
-    },
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
+        paddingTop: 50,
+        backgroundColor: "rgba(255, 255, 255, 0.9)",
     },
     welcomeText: {
         fontSize: 28,
@@ -130,6 +161,12 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 15,
         color: "#333",
+    },
+    noElectionsText: {
+        fontSize: 16,
+        color: "#6c757d",
+        textAlign: "center",
+        marginTop: 20,
     },
     electionList: {
         paddingBottom: 20,
@@ -159,7 +196,6 @@ const styles = StyleSheet.create({
     electionDeadline: {
         fontSize: 14,
         color: "#6c757d",
-        marginBottom: 5,
     },
     voteNowContainer: {
         flexDirection: "row",
