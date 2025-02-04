@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f9f9f9"
     },
     "ios": {
       "supportsTablet": true
@@ -19,10 +19,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fujitive013.SmartVote"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "API_KEY": "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev",
+      "eas": {
+        "projectId": "76207cd5-08c0-4aa6-b248-d6869673c6d8"
+      }
     }
   }
 }

@@ -10,23 +10,65 @@ import {
 import React, { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
+import axios from "axios"; // Make sure axios is installed
 
 const SignUp = () => {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const navigation = useNavigation();
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
-    const handleLogin = () => {
-        if (!email || !password) {
-            Alert.alert("Error", "Please enter both email and password.");
+    const handleSignUp = async () => {
+        if (
+            !firstName ||
+            !lastName ||
+            !email ||
+            !password ||
+            !confirmPassword
+        ) {
+            Alert.alert("Error", "Please fill in all fields.");
             return;
         }
-        navigation.navigate("SignUp");
-        Alert.alert("Success", `Welcome, ${email}!`);
+
+        if (password !== confirmPassword) {
+            Alert.alert("Error", "Passwords do not match.");
+            return;
+        }
+
+        try {
+            // Make API request to register the user
+            const response = await axios.post(`${API_KEY}/auth/register`, {
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                password: password,
+            });
+
+            // Handle successful response
+            if (response.status === 201) {
+                Alert.alert("User created successfully!", "Please login.");
+                navigation.navigate("Login"); // Redirect to login screen after successful signup
+            }
+        } catch (error) {
+            // Handle error response
+            console.error("Error during signup:", error);
+            Alert.alert(
+                "Error",
+                "An error occurred while creating the account."
+            );
+        }
     };
 
     const handleBack = () => {
         navigation.goBack();
+    };
+
+    const handleViewResults = () => {
+        Alert.alert("Error", "Under Construction.");
     };
 
     return (
@@ -40,6 +82,20 @@ const SignUp = () => {
                 <Text style={styles.appName}>SmartVote</Text>
             </View>
             <View style={styles.signUpCard}>
+                <Text style={styles.label}>First Name</Text>
+                <TextInput
+                    placeholder="First Name"
+                    style={styles.input}
+                    value={firstName}
+                    onChangeText={setFirstName}
+                />
+                <Text style={styles.label}>Last Name</Text>
+                <TextInput
+                    placeholder="Last Name"
+                    style={styles.input}
+                    value={lastName}
+                    onChangeText={setLastName}
+                />
                 <Text style={styles.label}>Email</Text>
                 <TextInput
                     placeholder="example@email.com"
@@ -57,9 +113,17 @@ const SignUp = () => {
                     value={password}
                     onChangeText={setPassword}
                 />
+                <Text style={styles.label}>Confirm Password</Text>
+                <TextInput
+                    placeholder="Password"
+                    style={styles.input}
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                />
                 <TouchableOpacity
                     style={styles.signUpButton}
-                    onPress={handleLogin}
+                    onPress={handleSignUp}
                 >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
@@ -76,7 +140,7 @@ const SignUp = () => {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.guestButton}
-                        onPress={handleLogin}
+                        onPress={handleViewResults}
                     >
                         <Text style={styles.guestText}>View Results</Text>
                     </TouchableOpacity>
@@ -108,8 +172,8 @@ const styles = StyleSheet.create({
         color: "black",
     },
     backgroundImage: {
-        width: 250,
-        height: 250,
+        width: 150,
+        height: 150,
     },
     signUpCard: {
         width: "90%",
@@ -126,7 +190,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: "bold",
-        marginBottom: 15,
+        marginBottom: 0,
         color: "#333",
     },
     input: {
@@ -136,11 +200,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderRadius: 5,
         paddingHorizontal: 10,
-        marginBottom: 25,
+        marginBottom: 20,
     },
     signUpButton: {
         backgroundColor: "#007bff",
-        marginTop: 25,
+        marginTop: 15,
         marginBottom: 10,
         paddingVertical: 10,
         borderRadius: 5,

@@ -8,32 +8,68 @@ import {
     Alert,
 } from "react-native";
 import React, { useState } from "react";
-
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import axios from "axios";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigation = useNavigation();
+    const API_KEY = Constants.expoConfig?.extra?.API_KEY; // Add a fallback API URL
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert("Error", "Please enter both email and password.");
+            Alert.alert("Error", "Please fill in all fields.");
             return;
         }
-        // Handle login logic here
-        navigation.navigate("SignUp");
-        Alert.alert("Success", `Welcome, ${email}!`);
+
+        try {
+            const response = await axios.post(`${API_KEY}/auth/login`, {
+                email,
+                password,
+            });
+
+            console.log("Login response:", response.data);
+
+            if (response.data?.message === "Login successful") {
+                // Store only the user object
+                await AsyncStorage.setItem(
+                    "userData",
+                    JSON.stringify(response.data.user)
+                );
+
+                Alert.alert("Success", "Login successful!");
+                navigation.navigate("Home"); // Ensure "Home" exists in navigator
+            } else {
+                Alert.alert(
+                    "Login failed",
+                    response.data?.error || "Invalid credentials."
+                );
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            Alert.alert(
+                "Login failed",
+                error.response?.data?.error || "An unexpected error occurred."
+            );
+        }
     };
+
     const handleSignUp = () => {
         navigation.navigate("SignUp");
+    };
+
+    const handleViewResults = () => {
+        navigation.navigate("Results");
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Image
-                    source={require("../../assets/icon.png")}
+                    source={require("../../assets/icon.png")} // Ensure this file exists
                     style={styles.backgroundImage}
                     resizeMode="contain"
                 />
@@ -74,7 +110,7 @@ const Login = () => {
                 <View style={styles.loginCardFooter}>
                     <TouchableOpacity
                         style={styles.guestButton}
-                        onPress={handleLogin}
+                        onPress={handleViewResults}
                     >
                         <Text style={styles.guestText}>View Results</Text>
                     </TouchableOpacity>
@@ -85,6 +121,7 @@ const Login = () => {
 };
 
 export default Login;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -118,27 +155,26 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-        position: "relative",
     },
     label: {
         fontSize: 14,
         fontWeight: "bold",
-        marginBottom: 15,
+        marginBottom: 8,
         color: "#333",
     },
     input: {
-        fontSize: 20,
-        height: 50,
+        fontSize: 16,
+        height: 45,
         borderColor: "#007bff",
         borderBottomWidth: 2,
         borderRadius: 5,
         paddingHorizontal: 10,
-        marginBottom: 25,
+        marginBottom: 20,
     },
     loginButton: {
         backgroundColor: "#007bff",
-        marginTop: 25,
-        paddingVertical: 10,
+        marginTop: 20,
+        paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
     },
