@@ -106,7 +106,7 @@ const ElectionDetails = ({ route }) => {
 
         const { first_name, last_name, id: voterId } = user;
         const { _id: electionId, name: electionName } = election;
-
+        // Payload for submitting the vote
         const payload = {
             voter_id: voterId,
             voter_first_name: first_name,
@@ -123,6 +123,7 @@ const ElectionDetails = ({ route }) => {
             const response = await axios.post(`${API_BASE_URL}/votes`, payload);
 
             if (response.status === 201) {
+                // If the vote is successful, update the state and navigate to Home
                 setHasVoted(true);
                 setSelectedCandidate(candidateId);
                 Alert.alert(

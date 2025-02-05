@@ -13,6 +13,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 
+// API endpoint for fetching data
 const API_KEY =
     "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
@@ -27,6 +28,7 @@ const Home = () => {
         fetchUserData();
     }, []);
 
+    // useFocusEffect hook to handle back button press
     useFocusEffect(
         React.useCallback(() => {
             const onBackPress = () => true; // Prevent going back
@@ -41,6 +43,7 @@ const Home = () => {
         }, [])
     );
 
+    // Fetch elections data from the API
     const fetchElections = async () => {
         try {
             const response = await axios.get(`${API_KEY}/elections`);
@@ -51,6 +54,7 @@ const Home = () => {
         }
     };
 
+    // Fetch user data from the API
     const fetchUserData = async () => {
         try {
             const userData = await AsyncStorage.getItem("userData");
