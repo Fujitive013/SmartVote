@@ -10,12 +10,15 @@ import {
     ScrollView,
 } from "react-native";
 import axios from "axios";
+
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE_URL =
     "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
 const ElectionDetails = ({ route }) => {
+    const navigation = useNavigation();
     const { electionId } = route.params;
     const [election, setElection] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -36,7 +39,24 @@ const ElectionDetails = ({ route }) => {
                 `${API_BASE_URL}/elections/${electionId}`
             );
             console.log("Election data received:", response.data);
-            setElection(response.data);
+
+            // Fetch vote count for each candidate
+            const candidatesWithVotes = await Promise.all(
+                response.data.candidates.map(async (candidate) => {
+                    const voteCountResponse = await axios.get(
+                        `${API_BASE_URL}/votes/count/${candidate._id}`
+                    );
+                    return {
+                        ...candidate,
+                        voteCount: voteCountResponse.data.voteCount,
+                    };
+                })
+            );
+
+            setElection({
+                ...response.data,
+                candidates: candidatesWithVotes,
+            });
         } catch (error) {
             console.error("Error fetching election details:", error);
         } finally {
@@ -109,6 +129,7 @@ const ElectionDetails = ({ route }) => {
                     "Vote Successful",
                     `You voted for ${candidateName}`
                 );
+                navigation.navigate("Home");
             } else {
                 Alert.alert(
                     "Error",
