@@ -6,6 +6,9 @@ import {
     TouchableOpacity,
     Image,
     Alert,
+    KeyboardAvoidingView,
+    ScrollView,
+    Platform,
 } from "react-native";
 import React, { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -72,91 +75,102 @@ const SignUp = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Image
-                    source={require("../../assets/icon.png")}
-                    style={styles.logo}
-                />
-                <Text style={styles.appName}>SmartVote</Text>
-            </View>
-
-            <View style={styles.signUpCard}>
-                {[
-                    "First Name",
-                    "Last Name",
-                    "Email",
-                    "Password",
-                    "Confirm Password",
-                ].map((label, index) => (
-                    <View key={index}>
-                        <Text style={styles.label}>{label}</Text>
-                        <TextInput
-                            placeholder={label}
-                            style={styles.input}
-                            value={
-                                label === "First Name"
-                                    ? firstName
-                                    : label === "Last Name"
-                                    ? lastName
-                                    : label === "Email"
-                                    ? email
-                                    : label === "Password"
-                                    ? password
-                                    : confirmPassword
-                            }
-                            onChangeText={
-                                label === "First Name"
-                                    ? setFirstName
-                                    : label === "Last Name"
-                                    ? setLastName
-                                    : label === "Email"
-                                    ? setEmail
-                                    : label === "Password"
-                                    ? setPassword
-                                    : setConfirmPassword
-                            }
-                            secureTextEntry={label
-                                .toLowerCase()
-                                .includes("password")}
-                            keyboardType={
-                                label === "Email" ? "email-address" : "default"
-                            }
-                            autoCapitalize={
-                                label === "Email" ? "none" : "words"
-                            }
-                        />
-                    </View>
-                ))}
-
-                <TouchableOpacity
-                    style={styles.signUpButton}
-                    onPress={handleSignUp}
-                >
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
-
-                <View style={styles.footer}>
-                    <TouchableOpacity
-                        style={styles.iconButton}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Ionicons
-                            name="arrow-back-outline"
-                            size={20}
-                            color="#333"
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() =>
-                            Alert.alert("Info", "Feature under development.")
-                        }
-                    >
-                        <Text style={styles.guestText}>View Results</Text>
-                    </TouchableOpacity>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                keyboardShouldPersistTaps="handled"
+            >
+                <View style={styles.header}>
+                    <Image
+                        source={require("../../assets/icon.png")}
+                        style={styles.logo}
+                    />
+                    <Text style={styles.appName}>SmartVote</Text>
                 </View>
-            </View>
-        </View>
+
+                <View style={styles.signUpCard}>
+                    {[
+                        "First Name",
+                        "Last Name",
+                        "Email",
+                        "Password",
+                        "Confirm Password",
+                    ].map((label, index) => (
+                        <View key={index}>
+                            <Text style={styles.label}>{label}</Text>
+                            <TextInput
+                                placeholder={label}
+                                style={styles.input}
+                                value={
+                                    label === "First Name"
+                                        ? firstName
+                                        : label === "Last Name"
+                                        ? lastName
+                                        : label === "Email"
+                                        ? email
+                                        : label === "Password"
+                                        ? password
+                                        : confirmPassword
+                                }
+                                onChangeText={
+                                    label === "First Name"
+                                        ? setFirstName
+                                        : label === "Last Name"
+                                        ? setLastName
+                                        : label === "Email"
+                                        ? setEmail
+                                        : label === "Password"
+                                        ? setPassword
+                                        : setConfirmPassword
+                                }
+                                secureTextEntry={label.includes("Password")}
+                                keyboardType={
+                                    label === "Email"
+                                        ? "email-address"
+                                        : "default"
+                                }
+                                autoCapitalize={
+                                    label === "Email" ? "none" : "words"
+                                }
+                            />
+                        </View>
+                    ))}
+
+                    <TouchableOpacity
+                        style={styles.signUpButton}
+                        onPress={handleSignUp}
+                    >
+                        <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.footer}>
+                        <TouchableOpacity
+                            style={styles.iconButton}
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Ionicons
+                                name="arrow-back-outline"
+                                size={20}
+                                color="#333"
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() =>
+                                Alert.alert(
+                                    "Info",
+                                    "Feature under development."
+                                )
+                            }
+                        >
+                            <Text style={styles.guestText}>View Results</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -165,9 +179,11 @@ export default SignUp;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
         backgroundColor: "#f9f9f9",
-        paddingTop: "20%",
+    },
+    scrollContainer: {
+        alignItems: "center",
+        paddingVertical: 30,
     },
     header: {
         alignItems: "center",

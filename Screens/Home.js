@@ -6,9 +6,10 @@ import {
     FlatList,
     TouchableOpacity,
     Alert,
+    BackHandler,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 
@@ -25,6 +26,20 @@ const Home = () => {
         fetchElections();
         fetchUserData();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const onBackPress = () => true; // Prevent going back
+
+            BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+            return () =>
+                BackHandler.removeEventListener(
+                    "hardwareBackPress",
+                    onBackPress
+                );
+        }, [])
+    );
 
     const fetchElections = async () => {
         try {
