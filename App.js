@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "./Screens/Auth/Login";
 import SignUp from "./Screens/Auth/Signup";
-import Home from "./Screens/Dashboard/Home";
+import Home from "./Screens/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
 const Stack = createNativeStackNavigator();
 

@@ -10,14 +10,15 @@ import {
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
 import axios from "axios";
+
+const API_KEY =
+    "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigation = useNavigation();
-    const API_KEY = Constants.expoConfig?.extra?.API_KEY; // Add a fallback API URL
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -31,25 +32,22 @@ const Login = () => {
                 password,
             });
 
-            console.log("Login response:", response.data);
-
-            if (response.data?.message === "Login successful") {
-                // Store only the user object
+            if (response?.data?.message === "Login successful") {
                 await AsyncStorage.setItem(
                     "userData",
-                    JSON.stringify(response.data.user)
+                    JSON.stringify(response?.data?.user)
                 );
 
                 Alert.alert("Success", "Login successful!");
-                navigation.navigate("Home"); // Ensure "Home" exists in navigator
+                navigation.navigate("Home");
             } else {
                 Alert.alert(
                     "Login failed",
-                    response.data?.error || "Invalid credentials."
+                    response?.data?.error || "Invalid credentials."
                 );
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Login error:", error);
             Alert.alert(
                 "Login failed",
                 error.response?.data?.error || "An unexpected error occurred."
@@ -57,19 +55,11 @@ const Login = () => {
         }
     };
 
-    const handleSignUp = () => {
-        navigation.navigate("SignUp");
-    };
-
-    const handleViewResults = () => {
-        navigation.navigate("Results");
-    };
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Image
-                    source={require("../../assets/icon.png")} // Ensure this file exists
+                    source={require("../../assets/icon.png")}
                     style={styles.backgroundImage}
                     resizeMode="contain"
                 />
@@ -101,20 +91,18 @@ const Login = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.signUpButton}
-                    onPress={handleSignUp}
+                    onPress={() => navigation.navigate("SignUp")}
                 >
                     <Text style={styles.signUpText}>
                         New User? Register Now
                     </Text>
                 </TouchableOpacity>
-                <View style={styles.loginCardFooter}>
-                    <TouchableOpacity
-                        style={styles.guestButton}
-                        onPress={handleViewResults}
-                    >
-                        <Text style={styles.guestText}>View Results</Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity
+                    style={styles.guestButton}
+                    onPress={() => navigation.navigate("Results")}
+                >
+                    <Text style={styles.guestText}>View Results</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -125,10 +113,8 @@ export default Login;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
         alignItems: "center",
         backgroundColor: "#f9f9f9",
-        paddingVertical: 10,
         paddingTop: "20%",
     },
     header: {
@@ -138,7 +124,6 @@ const styles = StyleSheet.create({
     appName: {
         fontSize: 30,
         fontWeight: "bold",
-        marginTop: -10,
         color: "black",
     },
     backgroundImage: {
@@ -165,11 +150,11 @@ const styles = StyleSheet.create({
     input: {
         fontSize: 16,
         height: 45,
-        borderColor: "#007bff",
         borderBottomWidth: 2,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 20,
+        borderColor: "#007bff",
     },
     loginButton: {
         backgroundColor: "#007bff",
@@ -186,7 +171,6 @@ const styles = StyleSheet.create({
     signUpButton: {
         marginTop: 15,
         paddingVertical: 10,
-        borderRadius: 5,
         alignItems: "center",
     },
     signUpText: {
@@ -194,15 +178,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
-    loginCardFooter: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        marginTop: 20,
-    },
     guestButton: {
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 5,
+        marginTop: 20,
+        alignItems: "center",
     },
     guestText: {
         color: "#007bff",

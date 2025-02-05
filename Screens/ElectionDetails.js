@@ -9,9 +9,11 @@ import {
     Image,
     ScrollView,
 } from "react-native";
-import Constants from "expo-constants";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const API_BASE_URL =
+    "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
 const ElectionDetails = ({ route }) => {
     const { electionId } = route.params;
@@ -19,7 +21,7 @@ const ElectionDetails = ({ route }) => {
     const [loading, setLoading] = useState(true);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [user, setUser] = useState(null);
-    const API_KEY = Constants.expoConfig?.extra?.API_KEY;
+    const [hasVoted, setHasVoted] = useState(false);
 
     useEffect(() => {
         fetchUserData();
@@ -31,34 +33,57 @@ const ElectionDetails = ({ route }) => {
         try {
             console.log("Fetching election details...");
             const response = await axios.get(
-                `${API_KEY}/elections/${electionId}`
+                `${API_BASE_URL}/elections/${electionId}`
             );
             console.log("Election data received:", response.data);
             setElection(response.data);
         } catch (error) {
             console.error("Error fetching election details:", error);
-        }
-        setLoading(false);
-    };
-
-    const fetchUserData = async () => {
-        try {
-            const userData = await AsyncStorage.getItem("userData");
-            console.log("Raw user data from storage:", userData);
-            if (userData) {
-                const parsedData = JSON.parse(userData);
-                console.log("Parsed user data:", parsedData);
-                setUser(parsedData);
-            }
-        } catch (error) {
-            console.error("Error fetching user data:", error);
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchUserData = async () => {
+        try {
+            const userData = await AsyncStorage.getItem("userData");
+            if (userData) {
+                const parsedData = JSON.parse(userData);
+                setUser(parsedData);
+
+                // Check if the user has already voted
+                checkUserVote(parsedData.id);
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
+    const checkUserVote = async (voterId) => {
+        try {
+            const response = await axios.get(
+                `${API_BASE_URL}/votes/check?voter_id=${voterId}&election_id=${electionId}`
+            );
+            if (response.data && response.data.hasVoted) {
+                setHasVoted(true);
+                setSelectedCandidate(response.data.candidate_id);
+            }
+        } catch (error) {
+            console.error("Error checking vote status:", error);
+        }
+    };
+
     const handleVote = async (candidateName, candidateId) => {
-        // Assuming user data contains these properties
+        if (hasVoted) {
+            Alert.alert("Error", "You have already voted in this election.");
+            return;
+        }
+
+        if (!user || !election) {
+            Alert.alert("Error", "User or election data is missing.");
+            return;
+        }
+
         const { first_name, last_name, id: voterId } = user;
         const { _id: electionId, name: electionName } = election;
 
@@ -67,40 +92,34 @@ const ElectionDetails = ({ route }) => {
             voter_first_name: first_name,
             voter_last_name: last_name,
             election_id: electionId,
-            election_name: electionName, // Include election name from server
+            election_name: electionName,
             candidate_id: candidateId,
             candidate_name: candidateName,
         };
 
-        console.log("Payload:", payload);
+        console.log("Submitting vote:", payload);
 
         try {
-            // Send vote request
-            const response = await axios.post(`${API_KEY}/votes`, payload);
+            const response = await axios.post(`${API_BASE_URL}/votes`, payload);
 
             if (response.status === 201) {
-                // Successful vote submission
+                setHasVoted(true);
+                setSelectedCandidate(candidateId);
                 Alert.alert(
                     "Vote Successful",
-                    `You have voted for ${candidateName}`
+                    `You voted for ${candidateName}`
                 );
-            } else if (response.status === 400) {
-                // User has already voted in this election
-                Alert.alert("Error", "You have already voted in this election");
             } else {
-                // Other issues
                 Alert.alert(
                     "Error",
-                    response.data.error ||
-                        "There was an issue casting your vote. Please try again."
+                    response.data.error || "Voting failed. Try again."
                 );
             }
         } catch (error) {
             console.error("Error during voting:", error);
             Alert.alert(
                 "Error",
-                error.response?.data?.error ||
-                    "There was an issue with your request. Please try again later."
+                "There was an issue casting your vote. Try again."
             );
         }
     };
@@ -157,22 +176,17 @@ const ElectionDetails = ({ route }) => {
                             <TouchableOpacity
                                 style={[
                                     styles.voteButton,
-                                    selectedCandidate?._id === candidate._id
+                                    hasVoted
                                         ? styles.disabledButton
                                         : styles.activeButton,
                                 ]}
-                                onPress={() => {
-                                    console.log(
-                                        "handleVote triggered for:",
-                                        candidate.name,
-                                        candidate._id
-                                    );
-                                    handleVote(candidate.name, candidate._id);
-                                }}
+                                onPress={() =>
+                                    handleVote(candidate.name, candidate._id)
+                                }
+                                disabled={hasVoted}
                             >
                                 <Text style={styles.voteButtonText}>
-                                    {selectedCandidate &&
-                                    selectedCandidate._id === candidate._id
+                                    {selectedCandidate === candidate._id
                                         ? "Voted"
                                         : "Vote"}
                                 </Text>
@@ -229,7 +243,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#fff",
         borderRadius: 12,
         padding: 15,
         marginBottom: 15,
@@ -252,7 +266,7 @@ const styles = StyleSheet.create({
     },
     activeButton: { backgroundColor: "#007bff" },
     disabledButton: { backgroundColor: "#ccc" },
-    voteButtonText: { color: "#ffffff", fontSize: 14, fontWeight: "bold" },
+    voteButtonText: { color: "#fff", fontSize: 14, fontWeight: "bold" },
     noCandidatesText: {
         textAlign: "center",
         fontSize: 16,

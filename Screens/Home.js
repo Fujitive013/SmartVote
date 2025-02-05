@@ -11,22 +11,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
-import Constants from "expo-constants";
+
+const API_KEY =
+    "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
 const Home = () => {
     const navigation = useNavigation();
     const [elections, setElections] = useState([]);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const API_KEY = Constants.expoConfig?.extra?.API_KEY;
-    const clearStorage = async () => {
-        try {
-            await AsyncStorage.clear();
-            console.log("AsyncStorage cleared successfully!");
-        } catch (error) {
-            console.error("Error clearing AsyncStorage:", error);
-        }
-    };
+
     useEffect(() => {
         fetchElections();
         fetchUserData();
@@ -38,6 +32,7 @@ const Home = () => {
             setElections(response.data);
         } catch (error) {
             console.error("Error fetching elections:", error);
+            Alert.alert("Error", "Failed to load elections. Please try again.");
         }
     };
 
@@ -45,8 +40,7 @@ const Home = () => {
         try {
             const userData = await AsyncStorage.getItem("userData");
             if (userData) {
-                const parsedData = JSON.parse(userData);
-                setUser(parsedData);
+                setUser(JSON.parse(userData));
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
@@ -65,9 +59,9 @@ const Home = () => {
     };
 
     const getGreeting = () => {
-        const currentHour = new Date().getHours();
-        if (currentHour < 12) return "Good Morning";
-        if (currentHour < 18) return "Good Afternoon";
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 18) return "Good Afternoon";
         return "Good Evening";
     };
 
@@ -82,7 +76,6 @@ const Home = () => {
                 },
             },
         ]);
-        clearStorage(); // remove this before deploying
     };
 
     const renderElectionItem = ({ item }) => (

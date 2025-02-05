@@ -10,8 +10,7 @@ import {
 import React, { useState } from "react";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import Constants from "expo-constants";
-import axios from "axios"; // Make sure axios is installed
+import axios from "axios";
 
 const SignUp = () => {
     const [firstName, setFirstName] = useState("");
@@ -19,8 +18,11 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
     const navigation = useNavigation();
-    const API_KEY = Constants.expoConfig?.extra?.API_KEY;
+
+    const API_URL =
+        "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
 
     const handleSignUp = async () => {
         if (
@@ -30,7 +32,12 @@ const SignUp = () => {
             !password ||
             !confirmPassword
         ) {
-            Alert.alert("Error", "Please fill in all fields.");
+            Alert.alert("Error", "All fields are required.");
+            return;
+        }
+
+        if (password.length < 6) {
+            Alert.alert("Error", "Password must be at least 6 characters.");
             return;
         }
 
@@ -40,35 +47,28 @@ const SignUp = () => {
         }
 
         try {
-            // Make API request to register the user
-            const response = await axios.post(`${API_KEY}/auth/register`, {
+            const response = await axios.post(`${API_URL}/auth/register`, {
                 first_name: firstName,
                 last_name: lastName,
-                email: email,
-                password: password,
+                email,
+                password,
             });
 
-            // Handle successful response
             if (response.status === 201) {
-                Alert.alert("User created successfully!", "Please login.");
-                navigation.navigate("Login"); // Redirect to login screen after successful signup
+                Alert.alert("Success", "Account created successfully!");
+                navigation.navigate("Login");
             }
         } catch (error) {
-            // Handle error response
-            console.error("Error during signup:", error);
+            console.error(
+                "Signup Error:",
+                error.response?.data || error.message
+            );
             Alert.alert(
                 "Error",
-                "An error occurred while creating the account."
+                error.response?.data?.message ||
+                    "Signup failed. Please try again."
             );
         }
-    };
-
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
-    const handleViewResults = () => {
-        Alert.alert("Error", "Under Construction.");
     };
 
     return (
@@ -76,61 +76,70 @@ const SignUp = () => {
             <View style={styles.header}>
                 <Image
                     source={require("../../assets/icon.png")}
-                    style={styles.backgroundImage}
-                    resizeMode="contain"
+                    style={styles.logo}
                 />
                 <Text style={styles.appName}>SmartVote</Text>
             </View>
+
             <View style={styles.signUpCard}>
-                <Text style={styles.label}>First Name</Text>
-                <TextInput
-                    placeholder="First Name"
-                    style={styles.input}
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-                <Text style={styles.label}>Last Name</Text>
-                <TextInput
-                    placeholder="Last Name"
-                    style={styles.input}
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
-                <Text style={styles.label}>Email</Text>
-                <TextInput
-                    placeholder="example@email.com"
-                    style={styles.input}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <Text style={styles.label}>Password</Text>
-                <TextInput
-                    placeholder="Password"
-                    style={styles.input}
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
-                <Text style={styles.label}>Confirm Password</Text>
-                <TextInput
-                    placeholder="Password"
-                    style={styles.input}
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                />
+                {[
+                    "First Name",
+                    "Last Name",
+                    "Email",
+                    "Password",
+                    "Confirm Password",
+                ].map((label, index) => (
+                    <View key={index}>
+                        <Text style={styles.label}>{label}</Text>
+                        <TextInput
+                            placeholder={label}
+                            style={styles.input}
+                            value={
+                                label === "First Name"
+                                    ? firstName
+                                    : label === "Last Name"
+                                    ? lastName
+                                    : label === "Email"
+                                    ? email
+                                    : label === "Password"
+                                    ? password
+                                    : confirmPassword
+                            }
+                            onChangeText={
+                                label === "First Name"
+                                    ? setFirstName
+                                    : label === "Last Name"
+                                    ? setLastName
+                                    : label === "Email"
+                                    ? setEmail
+                                    : label === "Password"
+                                    ? setPassword
+                                    : setConfirmPassword
+                            }
+                            secureTextEntry={label
+                                .toLowerCase()
+                                .includes("password")}
+                            keyboardType={
+                                label === "Email" ? "email-address" : "default"
+                            }
+                            autoCapitalize={
+                                label === "Email" ? "none" : "words"
+                            }
+                        />
+                    </View>
+                ))}
+
                 <TouchableOpacity
                     style={styles.signUpButton}
                     onPress={handleSignUp}
                 >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
-                <View style={styles.signUpCardFooter}>
+
+                <View style={styles.footer}>
                     <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={handleBack}
+                        style={styles.iconButton}
+                        onPress={() => navigation.goBack()}
                     >
                         <Ionicons
                             name="arrow-back-outline"
@@ -139,8 +148,9 @@ const SignUp = () => {
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={styles.guestButton}
-                        onPress={handleViewResults}
+                        onPress={() =>
+                            Alert.alert("Info", "Feature under development.")
+                        }
                     >
                         <Text style={styles.guestText}>View Results</Text>
                     </TouchableOpacity>
@@ -155,10 +165,8 @@ export default SignUp;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
         alignItems: "center",
         backgroundColor: "#f9f9f9",
-        paddingVertical: 10,
         paddingTop: "20%",
     },
     header: {
@@ -168,10 +176,9 @@ const styles = StyleSheet.create({
     appName: {
         fontSize: 30,
         fontWeight: "bold",
-        marginTop: -10,
         color: "black",
     },
-    backgroundImage: {
+    logo: {
         width: 150,
         height: 150,
     },
@@ -185,28 +192,24 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
-        position: "relative",
     },
     label: {
         fontSize: 14,
         fontWeight: "bold",
-        marginBottom: 0,
         color: "#333",
+        marginBottom: 5,
     },
     input: {
-        fontSize: 20,
+        fontSize: 16,
         height: 50,
-        borderColor: "#007bff",
         borderBottomWidth: 2,
-        borderRadius: 5,
+        borderColor: "#007bff",
         paddingHorizontal: 10,
-        marginBottom: 20,
+        marginBottom: 15,
     },
     signUpButton: {
         backgroundColor: "#007bff",
-        marginTop: 15,
-        marginBottom: 10,
-        paddingVertical: 10,
+        paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
     },
@@ -215,23 +218,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
-    signUpCardFooter: {
+    footer: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 20,
     },
-    backButton: {
+    iconButton: {
         backgroundColor: "#f0f0f0",
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 5,
-    },
-    backText: {
-        color: "#007bff",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
-    guestButton: {
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 5,
