@@ -21,23 +21,23 @@ const Login = () => {
     const navigation = useNavigation();
 
     const handleLogin = async () => {
+        // if no email or password is provided
         if (!email || !password) {
             Alert.alert("Error", "Please fill in all fields.");
             return;
         }
-
         try {
+            // make a POST request to the server
             const response = await axios.post(`${API_KEY}/auth/login`, {
                 email,
                 password,
             });
-
+            // if the response is successful, save the user data in the async storage
             if (response?.data?.message === "Login successful") {
                 await AsyncStorage.setItem(
                     "userData",
                     JSON.stringify(response?.data?.user)
                 );
-
                 Alert.alert("Success", "Login successful!");
                 navigation.navigate("Home");
             } else {
@@ -46,6 +46,7 @@ const Login = () => {
                     response?.data?.error || "Invalid credentials."
                 );
             }
+            // if an error occurs, show an alert
         } catch (error) {
             console.error("Login error:", error);
             Alert.alert(
