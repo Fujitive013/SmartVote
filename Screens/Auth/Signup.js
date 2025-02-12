@@ -24,8 +24,7 @@ const SignUp = () => {
 
     const navigation = useNavigation();
 
-    const API_URL =
-        "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
+    const API_URL = "https://smart-vote-backend.vercel.app";
 
     const handleSignUp = async () => {
         if (

@@ -14,8 +14,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 
 // API endpoint for fetching data
-const API_KEY =
-    "https://1a375a1c-18b6-4b77-9e8a-41c734e72a13-00-2fwb4xgi46an6.pike.replit.dev";
+const API_KEY = "https://smart-vote-backend.vercel.app";
 
 const Home = () => {
     const navigation = useNavigation();
