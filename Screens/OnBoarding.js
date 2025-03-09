@@ -11,7 +11,7 @@ const OnBoarding = () => {
   const navigation = useNavigation();
 
   const votePress = () => {
-    navigation.navigate('LoginNew')
+    navigation.navigate('WelcomeScreen')
   }
 
   useEffect(() => {

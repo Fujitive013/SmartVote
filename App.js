@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnBoarding from "./Screens/OnBoarding";
 import Login from "./Screens/Auth/LoginNew";
+import WelcomeScreen from "./Screens/Auth/WelcomeScreen"
 import SignUp from "./Screens/Auth/Signup";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
@@ -16,6 +17,13 @@ export default function App() {
                 <Stack.Screen
                     name="OnBoarding"
                     component={OnBoarding}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="WelcomeScreen"
+                    component={WelcomeScreen}
                     options={{
                         headerShown: false,
                     }}
