@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Login from "./Screens/Auth/Login";
+import OnBoarding from "./Screens/OnBoarding";
+import Login from "./Screens/Auth/LoginNew";
 import SignUp from "./Screens/Auth/Signup";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
@@ -11,9 +12,16 @@ const Stack = createNativeStackNavigator();
 export default function App() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login">
+            <Stack.Navigator initialRouteName="OnBoarding">
                 <Stack.Screen
-                    name="Login"
+                    name="OnBoarding"
+                    component={OnBoarding}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="LoginNew"
                     component={Login}
                     options={{
                         headerShown: false,
