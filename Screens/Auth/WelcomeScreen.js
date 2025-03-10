@@ -19,6 +19,10 @@ const LoginNew = () => {
   const fontsLoaded = useCustomFonts();
   const navigation = useNavigation();
 
+  const onSignUp = () => {
+    navigation.navigate("SignUpNew")
+  }
+
   const onLogin = () => {
     navigation.navigate("LoginNew")
   }
@@ -44,7 +48,7 @@ const LoginNew = () => {
         <Text style={styles.subwelcomeText}>
           Where voting is made effortless.
         </Text>
-        <TouchableOpacity style={styles.createAccountButton}>
+        <TouchableOpacity style={styles.createAccountButton} onPress={onSignUp}>
           <Text style={styles.accountText}>Create an account</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginButton} onPress={onLogin}>

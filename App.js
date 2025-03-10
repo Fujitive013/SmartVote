@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnBoarding from "./Screens/OnBoarding";
 import Login from "./Screens/Auth/LoginNew";
 import WelcomeScreen from "./Screens/Auth/WelcomeScreen"
-import SignUp from "./Screens/Auth/Signup";
+import SignUp from "./Screens/Auth/SignUpNew";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
 import Results from "./Screens/Results";
@@ -36,7 +36,7 @@ export default function App() {
                     }}
                 />
                 <Stack.Screen
-                    name="SignUp"
+                    name="SignUpNew"
                     component={SignUp}
                     options={{
                         headerShown: false,
