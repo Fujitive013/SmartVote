@@ -5,10 +5,12 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
+  Image,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useCustomFonts } from "../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
+import { Entypo } from "@expo/vector-icons"; // Import icon from Expo
 
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
@@ -16,6 +18,7 @@ SplashScreen.preventAutoHideAsync();
 
 const LoginNew = () => {
   const fontsLoaded = useCustomFonts();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -26,19 +29,46 @@ const LoginNew = () => {
   if (!fontsLoaded) {
     return null;
   }
+
   return (
     <View style={styles.container}>
       <View style={styles.loginContainer}>
-        <Text style={styles.loginText}>Log In</Text>
+        <Text style={styles.loginText}>Log in</Text>
         <Text style={styles.subLoginText}>
           Access your account to cast your vote, and be part of a secure and
           transparent voting process.
         </Text>
         <TextInput placeholder="Email*" style={styles.emailInput} />
-        <TextInput placeholder="Password*" style={styles.passwordInput} />
-        <View style={styles.containerButton}>
-          <TouchableOpacity style={styles.continueButton}>
-            <Text>Continue</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            placeholder="Password*"
+            style={styles.passwordInput}
+            secureTextEntry={!passwordVisible}
+          />
+          <TouchableOpacity
+            style={styles.emojiContainer}
+            onPress={() => setPasswordVisible(!passwordVisible)}
+          >
+            <Image
+              source={
+                passwordVisible
+                  ? require("../../assets/images/eye-close.png") // Eye open
+                  : require("../../assets/images/eye-open.png") // Eye closed
+              }
+              style={styles.eyeIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.continueContainer}>
+          <Text style={styles.continueText}>Continue</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.forgotContainer}>
+          <Text style={styles.forgotText}>Forgot password?</Text>
+        </TouchableOpacity>
+        <View style={styles.accountContainer}>
+          <Text style={styles.dontText}>Don't have an account? </Text>
+          <TouchableOpacity>
+            <Text style={styles.createText}>Create now.</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -52,43 +82,88 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     flex: 1,
+    alignItems: "center",
   },
   loginContainer: {
-    top: height * 0.15,
-    marginLeft: height * 0.02,
+    top: height * 0.1,
+    justifyContent: "center",
+    width: height * 0.45,
   },
   loginText: {
-    fontSize: 32,
     fontFamily: "Montserrat-Bold",
+    fontSize: 36,
   },
   subLoginText: {
-    fontSize: 14,
     fontFamily: "Montserrat-Medium",
+    fontSize: 14,
     marginBottom: height * 0.05,
   },
   emailInput: {
-    borderColor: "#000",
-    borderWidth: 1,
-    borderRadius: 10,
-    fontSize: 15,
-    height: height * 0.06,
-    width: height * 0.46,
+    height: height * 0.07,
+    fontSize: 16,
     paddingLeft: height * 0.02,
+    borderRadius: 10,
+    borderWidth: 1,
     marginBottom: height * 0.02,
   },
+  passwordContainer: {
+    position: "relative",
+    width: "100%",
+  },
   passwordInput: {
-    borderColor: "#000",
-    borderWidth: 1,
-    borderRadius: 10,
-    fontSize: 15,
-    height: height * 0.06,
-    width: height * 0.46,
+    height: height * 0.07,
+    fontSize: 16,
     paddingLeft: height * 0.02,
+    paddingRight: height * 0.08,
+    borderRadius: 10,
+    borderWidth: 1,
+    width: "100%",
   },
-  containerButton: {
-
+  emojiContainer: {
+    position: "absolute",
+    right: 10,
+    top: "50%",
+    transform: [{ translateY: -12 }],
   },
-  continueButton: {
-
-  }
+  eyeIcon: {
+    width: 30,
+    height: 20,
+    tintColor: "#1E1E1E",
+  },
+  continueContainer: {
+    backgroundColor: "#111B56D4",
+    borderRadius: 20,
+    height: height * 0.09,
+    justifyContent: "center",
+    top: height * 0.03,
+    marginBottom: height * 0.05,
+  },
+  continueText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    textAlign: "center",
+  },
+  forgotContainer: {
+    width: height * 0.25,
+    alignSelf: "center",
+  },
+  forgotText: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Medium",
+    textAlign: "center",
+  },
+  accountContainer: {
+    flexDirection: "row",
+    top: height * 0.3,
+    justifyContent: "center",
+  },
+  dontText: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 18,
+  },
+  createText: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 18,
+    color: "#111B56",
+  },
 });
