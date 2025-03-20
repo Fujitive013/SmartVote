@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnBoarding from "./Screens/OnBoarding";
-import Login from "./Screens/Auth/LoginNew";
+import Login from "./Screens/Auth/Login";
 import WelcomeScreen from "./Screens/Auth/WelcomeScreen"
-import SignUp from "./Screens/Auth/SignUpNew";
+import Register from "./Screens/Auth/Register";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
 import Results from "./Screens/Results";
@@ -37,7 +37,7 @@ export default function App() {
                 />
                 <Stack.Screen
                     name="SignUpNew"
-                    component={SignUp}
+                    component={Register}
                     options={{
                         headerShown: false,
                     }}

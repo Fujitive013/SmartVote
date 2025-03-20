@@ -12,12 +12,13 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Pressable,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useCustomFonts } from "../../assets/fonts/fonts";
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
+import axios from "axios";
 
 const { width, height } = Dimensions.get("window");
 
@@ -88,7 +89,7 @@ const SignUpNew = () => {
   }, [password, confirmPassword]);
 
   // Handle continue button press
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
       setErrorMessage("Please fill out all required fields");
       setShowError(true);
@@ -113,11 +114,31 @@ const SignUpNew = () => {
       return;
     }
 
-    setShowSuccessModal(true);
-    setTimeout(() => {
-      setShowSuccessModal(false);
-      navigation.navigate("LoginNew");
-    }, 3000);
+    try {
+      // Make API request to register the user
+      const response = await axios.post(
+        `http://192.168.1.4:3000/auth/register`,
+        {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+        }
+      );
+
+      // Handle successful response
+      if (response.status === 201) {
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          setShowSuccessModal(false);
+          navigation.navigate("LoginNew");
+        }, 3000);
+      }
+    } catch (error) {
+      // Handle error response
+      console.error("Error during signup:", error);
+      Alert.alert("Error", "An error occurred while creating the account.");
+    }
   };
 
   // Auto-hide error message after 3 seconds
@@ -145,13 +166,13 @@ const SignUpNew = () => {
     // Only add this listener when success modal is showing
     if (showSuccessModal) {
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
+        "hardwareBackPress",
         () => {
           // Return true to prevent default behavior (going back)
           return true;
         }
       );
-  
+
       // Clean up the event listener
       return () => backHandler.remove();
     }
@@ -193,7 +214,10 @@ const SignUpNew = () => {
                     <Text style={styles.successMessage}>
                       You have successfully created an account.
                     </Text>
-                    <TouchableOpacity onPress={loginPress} style={styles.closeContainer}>
+                    <TouchableOpacity
+                      onPress={loginPress}
+                      style={styles.closeContainer}
+                    >
                       <Text style={styles.closeText}>Close</Text>
                     </TouchableOpacity>
                   </View>
@@ -580,7 +604,7 @@ const styles = StyleSheet.create({
   successModal: {
     backgroundColor: "#FFF",
     borderRadius: 20,
-    padding: height * 0.030,
+    padding: height * 0.03,
     alignItems: "center",
     elevation: 5,
     shadowColor: "#000",
@@ -608,15 +632,15 @@ const styles = StyleSheet.create({
   },
   closeContainer: {
     marginTop: height * 0.02,
-    backgroundColor: '#FF3B30',
+    backgroundColor: "#FF3B30",
     width: height * 0.12,
     height: height * 0.04,
     borderRadius: 10,
-    justifyContent: 'center'
+    justifyContent: "center",
   },
   closeText: {
-    color: '#FFF',
-    fontFamily: 'Montserrat-Medium',
-    textAlign: 'center'
-  }
+    color: "#FFF",
+    fontFamily: "Montserrat-Medium",
+    textAlign: "center",
+  },
 });
