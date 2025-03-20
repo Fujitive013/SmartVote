@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Dimensions } from "react-native";
 import { useCustomFonts } from "../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
+
+const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
 SplashScreen.preventAutoHideAsync();
 
@@ -55,25 +57,25 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: "#111B56",
-    fontSize: 70,
+    fontSize: 60,
     textAlign: "center",
     fontFamily: "Montserrat-Bold",
-    marginTop: 60,
+    marginTop: height * 0.08,
   },
   subTitleText: {
     color: "#111B56",
-    bottom: 20,
-    fontSize: 25,
+    bottom: height * 0.020,
+    fontSize: 20,
     textAlign: "center",
     fontFamily: "Montserrat-Medium",
   },
   buttonContainer:{
     backgroundColor: '#111B56D4',
-    padding: 15,
+    padding: height * 0.015,
     borderRadius: 20,
     width: '90%',
     alignSelf: 'center',
-    top: 450,
+    top: height * 0.6,
   },
   buttonText:{
     color: '#FFF',

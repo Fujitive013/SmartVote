@@ -6,11 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  BackHandler
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useCustomFonts } from "../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { Entypo } from "@expo/vector-icons"; // Import icon from Expo
+import { useNavigation } from "@react-navigation/native";
 
 const { width, height } = Dimensions.get("window"); // Get screen dimensions
 
@@ -19,6 +21,11 @@ SplashScreen.preventAutoHideAsync();
 const LoginNew = () => {
   const fontsLoaded = useCustomFonts();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigation = useNavigation();
+
+  const createAccountPress = () => {
+    navigation.navigate("SignUpNew")
+  }
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -67,7 +74,7 @@ const LoginNew = () => {
         </TouchableOpacity>
         <View style={styles.accountContainer}>
           <Text style={styles.dontText}>Don't have an account? </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={createAccountPress}>
             <Text style={styles.createText}>Create now.</Text>
           </TouchableOpacity>
         </View>
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
   continueContainer: {
     backgroundColor: "#111B56D4",
     borderRadius: 20,
-    height: height * 0.09,
+    height: height * 0.07,
     justifyContent: "center",
     top: height * 0.03,
     marginBottom: height * 0.05,
@@ -148,7 +155,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   forgotText: {
-    fontSize: 18,
+    fontSize: 15,
     fontFamily: "Montserrat-Medium",
     textAlign: "center",
   },
@@ -159,11 +166,11 @@ const styles = StyleSheet.create({
   },
   dontText: {
     fontFamily: "Montserrat-Medium",
-    fontSize: 18,
+    fontSize: 15,
   },
   createText: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 18,
+    fontSize: 15,
     color: "#111B56",
   },
 });
