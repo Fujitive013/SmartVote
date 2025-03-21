@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useCustomFonts } from "../../assets/fonts/fonts";
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
+import Constants from "expo-constants";
 import axios from "axios";
 
 const { width, height } = Dimensions.get("window");
@@ -48,6 +49,9 @@ const SignUpNew = () => {
   // Error message state
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
+
+  // API KEY
+  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   const loginPress = () => {
     navigation.navigate("LoginNew");
@@ -117,7 +121,7 @@ const SignUpNew = () => {
     try {
       // Make API request to register the user
       const response = await axios.post(
-        `http://192.168.1.4:3000/auth/register`,
+        `${API_KEY}/auth/register`,
         {
           first_name: firstName,
           last_name: lastName,

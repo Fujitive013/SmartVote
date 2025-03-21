@@ -12,6 +12,8 @@ import {
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import Constants from "expo-constants";
 
 const { width, height } = Dimensions.get("window");
 
@@ -20,6 +22,8 @@ const HomeNew = () => {
   const [elections, setElections] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   useEffect(() => {
     fetchElections();
@@ -28,7 +32,7 @@ const HomeNew = () => {
 
   const fetchElections = async () => {
     try {
-      const response = await axios.get(`http://192.168.1.4:3000/elections`);
+      const response = await axios.get(`${API_KEY}/elections`);
       setElections(response.data);
     } catch (error) {
       console.error("Error fetching elections:", error);
@@ -49,6 +53,7 @@ const HomeNew = () => {
     }
   };
 
+  //for candidate ni nga date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {

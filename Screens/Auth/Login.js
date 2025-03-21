@@ -26,6 +26,7 @@ const LoginNew = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -34,7 +35,7 @@ const LoginNew = () => {
     }
 
     try {
-      const response = await axios.post('http://192.168.1.4:3000/auth/login', {
+      const response = await axios.post(`${API_KEY}/auth/login`, {
         email,
         password,
       });
@@ -42,10 +43,17 @@ const LoginNew = () => {
       console.log("Login response:", response.data);
 
       if (response.data?.message === "Login successful") {
-        // Store only the user object
+        // Extract the token and remove the "Bearer " prefix
+        const token = response.data.token.replace("Bearer ", "");
+
+        // Store the user object and the cleaned token
         await AsyncStorage.setItem(
           "userData",
           JSON.stringify(response.data.user)
+        );
+        await AsyncStorage.setItem(
+          "userToken",
+          token // Store the cleaned token
         );
 
         Alert.alert("Success", "Login successful!");
@@ -115,7 +123,10 @@ const LoginNew = () => {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.continueContainer} onPress={handleLogin}>
+        <TouchableOpacity
+          style={styles.continueContainer}
+          onPress={handleLogin}
+        >
           <Text style={styles.continueText}>Continue</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.forgotContainer}>
