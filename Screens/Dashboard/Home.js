@@ -22,29 +22,107 @@ const HomeNew = () => {
   const [elections, setElections] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [myCityId, setMyCityId] = useState(null);
+  const [myBarangayId, setMyBarangayId] = useState(null);
+  const [voteCount, setVoteCount] = useState(0);
+  const [totalElections, setTotalElections] = useState(0);
   const navigation = useNavigation();
   const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
+  // Filter elections by user's barangay and city and exclude already voted ones
+  const filteredElections = elections.filter((election) => {
+    const isUserArea =
+      election.city_id === myCityId && election.baranggay_id === myBarangayId;
+
+    // Convert ObjectIDs to strings for comparison
+    const hasVoted = user?.voted_elections?.some(
+      (votedId) => String(votedId) === String(election._id)
+    );
+
+    console.log(
+      `Election: ${election.name}, ID: ${election._id}, hasVoted: ${hasVoted}`
+    );
+
+    // For the vote count display, we want ALL elections in the user's area
+    return isUserArea;
+  });
+
   useEffect(() => {
-    fetchElections();
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (myCityId && myBarangayId) {
+      fetchElections();
+    }
+  }, [myCityId, myBarangayId]);
+
   const fetchElections = async () => {
     try {
-      const response = await axios.get(`${API_KEY}/elections`);
-      setElections(response.data);
+      if (!myCityId || !myBarangayId) {
+        console.error("City ID or Barangay ID is missing.");
+        return;
+      }
+
+      const url = `${API_KEY}/elections/getByBaranggay/${myCityId}/${myBarangayId}`;
+      console.log("Fetching elections from:", url); // Debugging: Log the URL
+
+      const response = await axios.get(url);
+
+      const electionsData = response.data;
+      setElections(electionsData);
+      setTotalElections(electionsData.length);
     } catch (error) {
-      console.error("Error fetching elections:", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          console.log("Elections not found for the given city and barangay.");
+        } else {
+          console.error(
+            "Server error:",
+            error.response.status,
+            error.response.data
+          );
+        }
+      } else if (error.request) {
+        // No response received
+        console.error(
+          "No response from the server. Check your network connection."
+        );
+      } else {
+        // Something went wrong in setting up the request
+        console.error("Error setting up the request:", error.message);
+      }
     }
   };
 
+  // In your HomeNew.js component, modify the fetchUserData function:
   const fetchUserData = async () => {
     try {
       const userData = await AsyncStorage.getItem("userData");
       if (userData) {
         const parsedData = JSON.parse(userData);
+        console.log("User Data:", parsedData);
         setUser(parsedData);
+        setMyCityId(parsedData.city_id);
+        setMyBarangayId(parsedData.baranggay_id);
+
+        // Debugging - log the voted_elections array
+        console.log("Voted Elections:", parsedData.voted_elections);
+
+        // Make sure voted_elections is getting processed correctly
+        if (
+          parsedData.voted_elections &&
+          Array.isArray(parsedData.voted_elections)
+        ) {
+          console.log(
+            "Vote count should be:",
+            parsedData.voted_elections.length
+          );
+          setVoteCount(parsedData.voted_elections.length);
+        } else {
+          console.log("voted_elections is not an array or doesn't exist");
+          setVoteCount(0);
+        }
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -122,8 +200,8 @@ const HomeNew = () => {
             Looks like you haven't casted a vote for these ongoing elections:
           </Text>
           <View style={styles.countVote}>
-            <Text style={styles.votedText}>1</Text>
-            <Text style={styles.overVotedText}> / 6</Text>
+            <Text style={styles.votedText}>{voteCount}</Text>
+            <Text style={styles.overVotedText}> / {totalElections}</Text>
           </View>
           <TouchableOpacity style={styles.viewDetailsContainer}>
             <Text style={styles.detailsText}>View Details</Text>
@@ -172,13 +250,13 @@ const HomeNew = () => {
         </TouchableOpacity>
       </View>
       <View style={{ maxHeight: height * 0.28 }}>
-        {elections.length === 0 ? (
+        {filteredElections.length === 0 ? (
           <Text style={styles.noElectionsText}>
-            No ongoing elections available.
+            No ongoing elections available for your barangay.
           </Text>
         ) : (
           <FlatList
-            data={elections}
+            data={filteredElections}
             renderItem={renderElectionItem}
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.electionList}

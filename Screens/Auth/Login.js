@@ -57,7 +57,7 @@ const LoginNew = () => {
         );
 
         Alert.alert("Success", "Login successful!");
-        navigation.navigate("Home"); // Ensure "Home" exists in navigator
+        navigation.navigate("Dashboard Screen"); // Ensure "Home" exists in navigator
       } else {
         Alert.alert(
           "Login failed",

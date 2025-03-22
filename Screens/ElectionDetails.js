@@ -23,9 +23,50 @@ const ElectionDetails = ({ route }) => {
   const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   useEffect(() => {
-    fetchUserData();
-    fetchElectionDetails();
-  }, [electionId]);
+    const initializeData = async () => {
+      await fetchUserData(); // Fetch user data first
+    };
+  
+    initializeData();
+  }, []);
+  
+  useEffect(() => {
+    if (user) {
+      fetchElectionDetails();
+      fetchUserVote(); // Only fetch vote status once user is available
+    }
+  }, [user, electionId]);
+
+  const fetchUserVote = async () => {
+    if (!user) {
+      console.error("User data not available");
+      return;
+    }
+
+    const token = await AsyncStorage.getItem("userToken");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API_KEY}/votes/status`, {
+        params: {
+          voter_id: user.id, // Use the user's ID
+          election_id: electionId, // Use the current election ID
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.hasVoted) {
+        setSelectedCandidate(response.data.voteDetails.candidate_id); // Set the selected candidate
+      }
+    } catch (error) {
+      console.error("Error fetching user's vote:", error);
+    }
+  };
 
   const fetchElectionDetails = async () => {
     setLoading(true);
@@ -198,9 +239,7 @@ const ElectionDetails = ({ route }) => {
                 }}
               >
                 <Text style={styles.voteButtonText}>
-                  {selectedCandidate && selectedCandidate._id === candidate._id
-                    ? "Voted"
-                    : "Vote"}
+                  {selectedCandidate === candidate._id ? "Voted" : "Vote"}
                 </Text>
               </TouchableOpacity>
             </View>

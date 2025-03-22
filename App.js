@@ -8,6 +8,7 @@ import Register from "./Screens/Auth/Register";
 import Home from "./Screens/Dashboard/Home";
 import ElectionDetails from "./Screens/ElectionDetails";
 import Results from "./Screens/Results";
+import DashboardScreen from "./Screens/DashboardScreen";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -17,6 +18,13 @@ export default function App() {
                 <Stack.Screen
                     name="OnBoarding"
                     component={OnBoarding}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Dashboard Screen"
+                    component={DashboardScreen}
                     options={{
                         headerShown: false,
                     }}
@@ -69,11 +77,4 @@ export default function App() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-});
+const styles = StyleSheet.create({});

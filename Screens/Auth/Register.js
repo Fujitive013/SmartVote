@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   BackHandler,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useCustomFonts } from "../../assets/fonts/fonts";
@@ -20,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import Constants from "expo-constants";
 import axios from "axios";
+import { Picker } from "@react-native-picker/picker";
 
 const { width, height } = Dimensions.get("window");
 
@@ -40,6 +42,12 @@ const SignUpNew = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [cities, setCities] = useState([]);
+  const [selectedCities, setSelectedCities] = useState("");
+  const [barangays, setBarangays] = useState([]);
+  const [selectedBarangay, setSelectedBarangay] = useState("");
+  const [loading, setLoading] = useState(true);
+
   // Validation states
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
@@ -52,6 +60,27 @@ const SignUpNew = () => {
 
   // API KEY
   const API_KEY = Constants.expoConfig?.extra?.API_KEY;
+
+  useEffect(() => {
+    fetch(`${API_KEY}/locations/fetchCities`)
+      .then((response) => response.json())
+      .then((data) => {
+        setCities(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching cities:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  // When the city changes, update the barangay list
+  const handleCityChange = (cityId) => {
+    setSelectedCities(cityId);
+    const city = cities.find((c) => c._id === cityId);
+    setBarangays(city ? city.barangays : []);
+    setSelectedBarangay("");
+  };
 
   const loginPress = () => {
     navigation.navigate("LoginNew");
@@ -94,7 +123,15 @@ const SignUpNew = () => {
 
   // Handle continue button press
   const handleContinue = async () => {
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !selectedCities ||
+      !selectedBarangay
+    ) {
       setErrorMessage("Please fill out all required fields");
       setShowError(true);
       return;
@@ -118,17 +155,28 @@ const SignUpNew = () => {
       return;
     }
 
+    if (!selectedCities) {
+      setErrorMessage("Please select a city");
+      setShowError(true);
+      return;
+    }
+
+    if (!selectedBarangay) {
+      setErrorMessage("Please select a valid barangay");
+      setShowError(true);
+      return;
+    }
+
     try {
       // Make API request to register the user
-      const response = await axios.post(
-        `${API_KEY}/auth/register`,
-        {
-          first_name: firstName,
-          last_name: lastName,
-          email: email,
-          password: password,
-        }
-      );
+      const response = await axios.post(`${API_KEY}/auth/register`, {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        password: password,
+        city_id: selectedCities, // Ensure you have this value
+        baranggay_id: selectedBarangay, // Ensure you have this value
+      });
 
       // Handle successful response
       if (response.status === 201) {
@@ -326,6 +374,55 @@ const SignUpNew = () => {
                 <Text style={styles.errorText}>Passwords do not match</Text>
               )}
 
+              <Text style={styles.label}>Select City:</Text>
+              {loading ? (
+                <ActivityIndicator size="large" color="blue" />
+              ) : (
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={selectedCities}
+                    onValueChange={handleCityChange}
+                    style={styles.picker}
+                  >
+                    <Picker.Item
+                      label="Select a City"
+                      value=""
+                      color="#bebebe"
+                    />
+                    {cities.map((city) => (
+                      <Picker.Item
+                        key={city._id}
+                        label={city.name}
+                        value={city._id}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+
+              <Text style={styles.label}>Select Barangay:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedBarangay}
+                  onValueChange={(itemValue) => setSelectedBarangay(itemValue)}
+                  style={styles.picker}
+                  enabled={barangays.length > 0} // Disable if no barangays
+                >
+                  <Picker.Item
+                    label="Select a Barangay"
+                    value=""
+                    enabled={false}
+                  />
+                  {barangays.map((barangay) => (
+                    <Picker.Item
+                      key={barangay._id}
+                      label={barangay.name}
+                      value={barangay._id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+
               <View style={styles.conditionContainer}>
                 <Pressable
                   style={[styles.checkbox, isChecked && styles.checked]}
@@ -466,6 +563,7 @@ const styles = StyleSheet.create({
     paddingRight: height * 0.08,
     borderRadius: 10,
     borderWidth: 1,
+    marginBottom: 10,
     width: "100%",
   },
   inputError: {
@@ -508,6 +606,23 @@ const styles = StyleSheet.create({
     width: 30,
     height: 20,
     tintColor: "#1E1E1E",
+  },
+  pickerContainer: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#000",
+    height: height * 0.07,
+    justifyContent: "center",
+    marginBottom: height * 0.02,
+  },
+  picker: {
+    fontSize: 16,
+    paddingLeft: height * 0.02,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: height * 0.01,
   },
   conditionContainer: {
     flexDirection: "row",
