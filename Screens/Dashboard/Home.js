@@ -197,8 +197,11 @@ const HomeNew = () => {
         </View>
         <View style={styles.voteCounterContainer}>
           <Text style={styles.voteText}>
-            Looks like you haven't casted a vote for these ongoing elections:
+            {voteCount === totalElections
+              ? "You have already cast a vote for these ongoing elections:"
+              : "Looks like you haven't cast a vote for these ongoing elections."}
           </Text>
+
           <View style={styles.countVote}>
             <Text style={styles.votedText}>{voteCount}</Text>
             <Text style={styles.overVotedText}> / {totalElections}</Text>
