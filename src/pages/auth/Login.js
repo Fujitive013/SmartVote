@@ -1,22 +1,19 @@
 import {
-  StyleSheet,
   Text,
   View,
-  Dimensions,
   TextInput,
   TouchableOpacity,
   Image,
   Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useCustomFonts } from "../../assets/fonts/fonts";
+import { useCustomFonts } from "../../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
-import Constants from "expo-constants";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const { width, height } = Dimensions.get("window"); // Get screen dimensions
+import { API_BASE_URL } from "../../config/ApiConfig";
+import { storeUserData } from "../../utils/Storage";
+import { loginStyles as styles } from "../../styles/LoginStyles";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,7 +23,6 @@ const LoginNew = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -35,7 +31,7 @@ const LoginNew = () => {
     }
 
     try {
-      const response = await axios.post(`${API_KEY}/auth/login`, {
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         email,
         password,
       });
@@ -43,21 +39,11 @@ const LoginNew = () => {
       console.log("Login response:", response.data);
 
       if (response.data?.message === "Login successful") {
-        // Extract the token and remove the "Bearer " prefix
         const token = response.data.token.replace("Bearer ", "");
-
-        // Store the user object and the cleaned token
-        await AsyncStorage.setItem(
-          "userData",
-          JSON.stringify(response.data.user)
-        );
-        await AsyncStorage.setItem(
-          "userToken",
-          token // Store the cleaned token
-        );
+        await storeUserData(response.data.user, token);
 
         Alert.alert("Success", "Login successful!");
-        navigation.navigate("Dashboard Screen"); // Ensure "Home" exists in navigator
+        navigation.navigate("Dashboard Screen");
       } else {
         Alert.alert(
           "Login failed",
@@ -71,10 +57,6 @@ const LoginNew = () => {
         error.response?.data?.error || "An unexpected error occurred."
       );
     }
-  };
-
-  const createAccountPress = () => {
-    navigation.navigate("SignUpNew");
   };
 
   useEffect(() => {
@@ -116,8 +98,8 @@ const LoginNew = () => {
             <Image
               source={
                 passwordVisible
-                  ? require("../../assets/images/eye-close.png") // Eye open
-                  : require("../../assets/images/eye-open.png") // Eye closed
+                  ? require("../../../assets/images/eye-close.png")
+                  : require("../../../assets/images/eye-open.png")
               }
               style={styles.eyeIcon}
             />
@@ -134,7 +116,7 @@ const LoginNew = () => {
         </TouchableOpacity>
         <View style={styles.accountContainer}>
           <Text style={styles.dontText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={createAccountPress}>
+          <TouchableOpacity onPress={() => navigation.navigate("SignUpNew")}>
             <Text style={styles.createText}>Create now.</Text>
           </TouchableOpacity>
         </View>
@@ -144,93 +126,3 @@ const LoginNew = () => {
 };
 
 export default LoginNew;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FFFFFF",
-    flex: 1,
-    alignItems: "center",
-  },
-  loginContainer: {
-    top: height * 0.1,
-    justifyContent: "center",
-    width: height * 0.45,
-  },
-  loginText: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 36,
-  },
-  subLoginText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
-    marginBottom: height * 0.05,
-  },
-  emailInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    borderRadius: 10,
-    borderWidth: 1,
-    marginBottom: height * 0.02,
-  },
-  passwordContainer: {
-    position: "relative",
-    width: "100%",
-  },
-  passwordInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    paddingRight: height * 0.08,
-    borderRadius: 10,
-    borderWidth: 1,
-    width: "100%",
-  },
-  emojiContainer: {
-    position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -12 }],
-  },
-  eyeIcon: {
-    width: 30,
-    height: 20,
-    tintColor: "#1E1E1E",
-  },
-  continueContainer: {
-    backgroundColor: "#111B56D4",
-    borderRadius: 20,
-    height: height * 0.07,
-    justifyContent: "center",
-    top: height * 0.03,
-    marginBottom: height * 0.05,
-  },
-  continueText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  forgotContainer: {
-    width: height * 0.25,
-    alignSelf: "center",
-  },
-  forgotText: {
-    fontSize: 15,
-    fontFamily: "Montserrat-Medium",
-    textAlign: "center",
-  },
-  accountContainer: {
-    flexDirection: "row",
-    top: height * 0.3,
-    justifyContent: "center",
-  },
-  dontText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 15,
-  },
-  createText: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 15,
-    color: "#111B56",
-  },
-});

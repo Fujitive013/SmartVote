@@ -213,7 +213,7 @@ const HomeNew = () => {
       </View>
       <View style={styles.searchContainer}>
         <Image
-          source={require("../../assets/images/search.png")}
+          source={require("../../../assets/images/search.png")}
           style={styles.searchIcon}
         />
         <TextInput
@@ -226,7 +226,7 @@ const HomeNew = () => {
         <View style={styles.subQuickAccessContainer}>
           <TouchableOpacity style={styles.resultContainer}>
             <Image
-              source={require("../../assets/images/trending.png")}
+              source={require("../../../assets/images/trending.png")}
               style={styles.imageContainer}
             />
             <View style={styles.subResultContainer}>
@@ -236,7 +236,7 @@ const HomeNew = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.monitorContainer}>
             <Image
-              source={require("../../assets/images/monitor.png")}
+              source={require("../../../assets/images/monitor.png")}
               style={styles.imageContainer}
             />
             <View style={styles.subMonitorContainer}>

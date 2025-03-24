@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Dimensions } from "react-native";
-import { useCustomFonts } from "../assets/fonts/fonts";
+import { useCustomFonts } from "../../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
@@ -29,7 +29,7 @@ const OnBoarding = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/images/background.png")}
+        source={require("../../../assets/images/background.png")}
         resizeMode="cover"
         blurRadius={10}
         style={styles.image}

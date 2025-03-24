@@ -16,18 +16,18 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useCustomFonts } from "../../assets/fonts/fonts";
+import { useCustomFonts } from "../../../assets/fonts/fonts";
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
-import Constants from "expo-constants";
+import { API_BASE_URL } from "../../config/ApiConfig";
 import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
-
-const { width, height } = Dimensions.get("window");
+import { validatePassword } from "../../utils/validatePassword";
+import { registerStyles as styles } from "../../styles/RegisterStyles";
 
 SplashScreen.preventAutoHideAsync();
 
-const SignUpNew = () => {
+const Register = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -58,11 +58,9 @@ const SignUpNew = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
 
-  // API KEY
-  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   useEffect(() => {
-    fetch(`${API_KEY}/locations/fetchCities`)
+    fetch(`${API_BASE_URL}/locations/fetchCities`)
       .then((response) => response.json())
       .then((data) => {
         setCities(data);
@@ -84,24 +82,6 @@ const SignUpNew = () => {
 
   const loginPress = () => {
     navigation.navigate("LoginNew");
-  };
-
-  // Password validation function
-  const validatePassword = (pass) => {
-    let criteria = 0;
-
-    // Check for minimum length
-    if (pass.length >= 6) {
-      // Check for uppercase
-      if (/[A-Z]/.test(pass)) criteria++;
-      // Check for special character
-      if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) criteria++;
-      // Check for number
-      if (/[0-9]/.test(pass)) criteria++;
-
-      return criteria >= 3;
-    }
-    return false;
   };
 
   // Check if passwords match and validate when either input changes
@@ -169,7 +149,7 @@ const SignUpNew = () => {
 
     try {
       // Make API request to register the user
-      const response = await axios.post(`${API_KEY}/auth/register`, {
+      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
         first_name: firstName,
         last_name: lastName,
         email: email,
@@ -259,7 +239,7 @@ const SignUpNew = () => {
                 <View style={styles.successModalOverlay}>
                   <View style={styles.successModal}>
                     <Image
-                      source={require("../../assets/images/success.png")}
+                      source={require("../../../assets/images/success.png")}
                       style={styles.successIcon}
                     />
                     <Text style={styles.successTitle}>SUCCESS</Text>
@@ -315,8 +295,8 @@ const SignUpNew = () => {
                   <Image
                     source={
                       passwordVisible
-                        ? require("../../assets/images/eye-close.png")
-                        : require("../../assets/images/eye-open.png")
+                        ? require("../../../assets/images/eye-close.png")
+                        : require("../../../assets/images/eye-open.png")
                     }
                     style={styles.eyeIcon}
                   />
@@ -339,7 +319,7 @@ const SignUpNew = () => {
                 </View>
               )}
 
-              <View style={{ marginBottom: height * 0.02 }} />
+              <View style={styles.gapSpace} />
               <View style={styles.passwordContainer}>
                 <TextInput
                   placeholder="Confirm Password*"
@@ -362,8 +342,8 @@ const SignUpNew = () => {
                   <Image
                     source={
                       confirmPasswordVisible
-                        ? require("../../assets/images/eye-close.png")
-                        : require("../../assets/images/eye-open.png")
+                        ? require("../../../assets/images/eye-close.png")
+                        : require("../../../assets/images/eye-open.png")
                     }
                     style={styles.eyeIcon}
                   />
@@ -459,13 +439,13 @@ const SignUpNew = () => {
               <View style={styles.socialLoginContainer}>
                 <TouchableOpacity style={styles.facebookContainer}>
                   <Image
-                    source={require("../../assets/images/facebook.png")}
+                    source={require("../../../assets/images/facebook.png")}
                     style={styles.facebookLogo}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity>
                   <Image
-                    source={require("../../assets/images/google.png")}
+                    source={require("../../../assets/images/google.png")}
                     style={styles.googleLogo}
                   />
                 </TouchableOpacity>
@@ -478,288 +458,4 @@ const SignUpNew = () => {
   );
 };
 
-export default SignUpNew;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FFF",
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    alignItems: "center",
-  },
-  createText: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 32,
-  },
-  signUpContainer: {
-    width: height * 0.45,
-    marginTop: height * 0.1,
-    marginBottom: height * 0.05, // Add bottom margin for scrolling space
-    justifyContent: "center",
-  },
-  signUpText: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
-    marginBottom: height * 0.04,
-  },
-  errorSnackbar: {
-    backgroundColor: "#FF3B30",
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 15,
-  },
-  errorSnackbarText: {
-    color: "#FFF",
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
-    textAlign: "center",
-  },
-  firstNameInput: {
-    borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
-    borderColor: "#000",
-    borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
-  },
-  lastNameInput: {
-    borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
-    borderColor: "#000",
-    borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
-  },
-  emailInput: {
-    borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
-    borderColor: "#000",
-    borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
-  },
-  passwordContainer: {
-    width: "100%",
-    position: "relative",
-  },
-  passwordInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    paddingRight: height * 0.08,
-    borderRadius: 10,
-    borderWidth: 1,
-    width: "100%",
-  },
-  confirmPasswordInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    paddingRight: height * 0.08,
-    borderRadius: 10,
-    borderWidth: 1,
-    marginBottom: 10,
-    width: "100%",
-  },
-  inputError: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 5,
-    marginBottom: 5,
-    fontFamily: "Montserrat-Medium",
-  },
-  requirementsContainer: {
-    backgroundColor: "#E6E6F8",
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  requirementsText: {
-    fontSize: 14,
-    fontFamily: "Montserrat-Medium",
-    color: "#333",
-    marginBottom: 5,
-  },
-  requirementItem: {
-    fontSize: 13,
-    fontFamily: "Montserrat-Regular",
-    color: "#333",
-    marginLeft: 10,
-    marginTop: 2,
-  },
-  emojiContainer: {
-    position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -12 }],
-  },
-  eyeIcon: {
-    width: 30,
-    height: 20,
-    tintColor: "#1E1E1E",
-  },
-  pickerContainer: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#000",
-    height: height * 0.07,
-    justifyContent: "center",
-    marginBottom: height * 0.02,
-  },
-  picker: {
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: height * 0.01,
-  },
-  conditionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: height * 0.01,
-  },
-  checkbox: {
-    width: 20,
-    borderRadius: 2,
-    height: 20,
-    borderWidth: 2,
-    borderColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  checked: {
-    backgroundColor: "#000",
-  },
-  checkmark: {
-    color: "#fff",
-    fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  text: {
-    marginLeft: height * 0.02,
-    fontSize: 13,
-    color: "#000",
-    fontFamily: "Montserrat-Regular",
-  },
-  continueContainer: {
-    backgroundColor: "#111B56D4",
-    borderRadius: 20,
-    height: height * 0.07,
-    justifyContent: "center",
-    top: height * 0.01,
-    marginBottom: height * 0.03,
-  },
-  continueText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  loginContainer: {
-    flexDirection: "row",
-    alignSelf: "center",
-  },
-  accountText: {
-    fontSize: 16,
-    fontFamily: "Montserrat-Medium",
-  },
-  textLogin: {
-    fontSize: 16,
-    fontFamily: "Montserrat-Bold",
-    color: "#111B56",
-  },
-  orContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: height * 0.01,
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#000", // Adjust color if needed
-  },
-  orText: {
-    marginHorizontal: 10,
-    fontSize: 16,
-    color: "#000",
-    fontFamily: "Montserrat-Medium",
-  },
-  socialLoginContainer: {
-    flexDirection: "row",
-    alignSelf: "center",
-  },
-  facebookLogo: {
-    width: width * 0.1,
-    height: height * 0.05,
-  },
-  facebookContainer: {
-    marginRight: height * 0.02,
-  },
-  googleLogo: {
-    width: width * 0.1,
-    height: height * 0.05,
-  },
-  successModalOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 10,
-  },
-  successModal: {
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    padding: height * 0.03,
-    alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: width * 0.8,
-  },
-  successIcon: {
-    width: 80,
-    height: 80,
-    marginBottom: height * 0.015,
-  },
-  successTitle: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 24,
-    color: "#222",
-    marginBottom: height * 0.01,
-  },
-  successMessage: {
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
-    textAlign: "center",
-    color: "#444",
-  },
-  closeContainer: {
-    marginTop: height * 0.02,
-    backgroundColor: "#FF3B30",
-    width: height * 0.12,
-    height: height * 0.04,
-    borderRadius: 10,
-    justifyContent: "center",
-  },
-  closeText: {
-    color: "#FFF",
-    fontFamily: "Montserrat-Medium",
-    textAlign: "center",
-  },
-});
+export default Register;

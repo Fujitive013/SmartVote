@@ -10,14 +10,14 @@ import React, { useState } from "react";
 const { width, height } = Dimensions.get("window");
 
 // Icons
-const homeIcon = require("../assets/images/icon/home.png");
-const profileIcon = require("../assets/images/icon/profile.png");
-const resultIcon = require("../assets/images/icon/result.png");
+const homeIcon = require("../../../assets/images/icon/home.png");
+const profileIcon = require("../../../assets/images/icon/profile.png");
+const resultIcon = require("../../../assets/images/icon/result.png");
 
 // Screens
-import HomePage from "../Screens/Dashboard/Home";
-import Profile from "../Screens/Dashboard/Profile";
-import Settings from "../Screens/Dashboard/Settings";
+import HomePage from "../dashboards/Home";
+import Profile from "../dashboards/Profile";
+import Settings from "../dashboards/Settings";
 
 const DashboardScreen = () => {
   const [activeTab, setActiveTab] = useState("Home");

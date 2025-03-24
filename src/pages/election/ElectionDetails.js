@@ -212,7 +212,7 @@ const ElectionDetails = ({ route }) => {
           election.candidates.map((candidate) => (
             <View key={candidate._id} style={styles.candidateItem}>
               <Image
-                source={require("../assets/user.png")}
+                source={require("../../../assets/user.png")}
                 style={styles.candidateImage}
               />
               <View style={styles.candidateInfo}>
