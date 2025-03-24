@@ -14,6 +14,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../config/ApiConfig";
 import { storeUserData } from "../../utils/Storage";
 import { loginStyles as styles } from "../../styles/LoginStyles";
+import { login } from "../../services/auth";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,30 +32,27 @@ const LoginNew = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email,
-        password,
-      });
+      const response = await login(email, password);
 
-      console.log("Login response:", response.data);
+      console.log("Login response:", response);
 
-      if (response.data?.message === "Login successful") {
-        const token = response.data.token.replace("Bearer ", "");
-        await storeUserData(response.data.user, token);
+      if (response?.message === "Login successful") {
+        const token = response.token.replace("Bearer ", "");
+        await storeUserData(response.user, token);
 
         Alert.alert("Success", "Login successful!");
         navigation.navigate("Dashboard Screen");
       } else {
         Alert.alert(
           "Login failed",
-          response.data?.error || "Invalid credentials."
+          response?.error || "Invalid credentials."
         );
       }
     } catch (error) {
       console.error("Error:", error);
       Alert.alert(
         "Login failed",
-        error.response?.data?.error || "An unexpected error occurred."
+        error.response?.error || "An unexpected error occurred."
       );
     }
   };

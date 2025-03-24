@@ -24,6 +24,7 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import { validatePassword } from "../../utils/validatePassword";
 import { registerStyles as styles } from "../../styles/RegisterStyles";
+import { register } from "../../services/auth";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -147,15 +148,15 @@ const Register = () => {
     }
 
     try {
-      // Make API request to register the user
-      const response = await axios.post(`${API_BASE_URL}/auth/register`, {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        password: password,
-        city_id: selectedCities, // Ensure you have this value
-        baranggay_id: selectedBarangay, // Ensure you have this value
-      });
+      // Call the register service
+      const response = await register(
+        firstName,
+        lastName,
+        email,
+        password,
+        selectedCities,
+        selectedBarangay
+      );
 
       // Handle successful response
       if (response.status === 201) {
@@ -168,7 +169,10 @@ const Register = () => {
     } catch (error) {
       // Handle error response
       console.error("Error during signup:", error);
-      Alert.alert("Error", "An error occurred while creating the account.");
+      Alert.alert(
+        "Error",
+        error || "An error occurred while creating the account."
+      );
     }
   };
 
