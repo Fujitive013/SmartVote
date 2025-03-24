@@ -58,7 +58,6 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
 
-
   useEffect(() => {
     fetch(`${API_BASE_URL}/locations/fetchCities`)
       .then((response) => response.json())

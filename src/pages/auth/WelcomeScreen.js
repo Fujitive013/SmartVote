@@ -11,8 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { styles } from "../../styles/WelcomeScreenStyles";
 import WelcomeButtons from "../../components/WelcomeButton";
 
-const { height } = Dimensions.get("window");
-
 SplashScreen.preventAutoHideAsync();
 
 const WelcomeScreen = () => {
