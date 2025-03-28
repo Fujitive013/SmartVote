@@ -27,10 +27,10 @@ const ElectionDetails = ({ route }) => {
     const initializeData = async () => {
       await fetchUserData(); // Fetch user data first
     };
-  
+
     initializeData();
   }, []);
-  
+
   useEffect(() => {
     if (user) {
       fetchElectionDetails();
@@ -72,13 +72,27 @@ const ElectionDetails = ({ route }) => {
   const fetchElectionDetails = async () => {
     setLoading(true);
     try {
+      const token = await AsyncStorage.getItem("token"); // Get token first
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
       console.log("Fetching election details...");
-      const response = await axios.get(`${API_KEY}/elections/${electionId}`);
+      const response = await axios.get(`${API_KEY}/elections/${electionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add authorization header
+        },
+      });
       console.log("Election data received:", response.data);
       setElection(response.data);
       fetchVoteCounts(response.data.candidates);
     } catch (error) {
       console.error("Error fetching election details:", error);
+      if (error.response?.status === 401) {
+        Alert.alert("Session Expired", "Please log in again");
+        // Optionally navigate to login screen
+      }
     }
     setLoading(false);
   };

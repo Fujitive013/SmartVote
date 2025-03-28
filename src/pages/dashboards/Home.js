@@ -64,10 +64,22 @@ const HomeNew = () => {
         return;
       }
 
-      const url = `${API_BASE_URL}/elections/getByBaranggay/${myCityId}/${myBarangayId}`;
-      console.log("Fetching elections from:", url); // Debugging: Log the URL
+      const token = await AsyncStorage.getItem("token");
+      console.log("Raw token from storage:", token); // Debug
 
-      const response = await axios.get(url);
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      const url = `${API_BASE_URL}/elections/getByBaranggay/${myCityId}/${myBarangayId}`;
+      console.log("Fetching elections from:", url);
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Bearer prefix here
+        },
+      });
 
       const electionsData = response.data;
       setElections(electionsData);
@@ -99,9 +111,12 @@ const HomeNew = () => {
   const fetchUserData = async () => {
     try {
       const userData = await AsyncStorage.getItem("userData");
+      const token = await AsyncStorage.getItem("token"); // Get token first
+      console.log("Token from storage:", token);
       if (userData) {
         const parsedData = JSON.parse(userData);
         console.log("User Data:", parsedData);
+        console.log("Token:", token); // Debugging
         setUser(parsedData);
         setMyCityId(parsedData.city_id);
         setMyBarangayId(parsedData.baranggay_id);

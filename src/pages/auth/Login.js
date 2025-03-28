@@ -37,7 +37,7 @@ const LoginNew = () => {
       console.log("Login response:", response);
 
       if (response?.message === "Login successful") {
-        const token = response.token.replace("Bearer ", "");
+        const token = response.token?.replace("Bearer ", "").trim();
         await storeUserData(response.user, token);
 
         Alert.alert("Success", "Login successful!");
