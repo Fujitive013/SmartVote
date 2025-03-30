@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 
-export const dashboardScreenStyles = StyleSheet.create({
+const dashboardScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#DBDEF1",
@@ -42,3 +42,5 @@ export const dashboardScreenStyles = StyleSheet.create({
     tintColor: "black", // Color for inactive icon
   },
 });
+
+module.exports = { dashboardScreenStyles };

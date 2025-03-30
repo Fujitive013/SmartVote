@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { API_BASE_URL } from "../config/ApiConfig";
 
-export const login = async (email, password) => {
+const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/auth/login`, {
       email,
@@ -14,7 +14,7 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (first_name, last_name, email, password, city_id, baranggay_id) => {
+const register = async (first_name, last_name, email, password, city_id, baranggay_id) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/auth/register`, {
       first_name,
@@ -32,3 +32,5 @@ export const register = async (first_name, last_name, email, password, city_id, 
     throw error.response?.data?.message || "An unexpected error occurred.";
   }
 };
+
+module.exports = { login, register }

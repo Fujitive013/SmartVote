@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-export const homeStyles = StyleSheet.create({
+const homeStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#DBDEF1",
@@ -202,3 +202,5 @@ export const homeStyles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
+module.exports = { homeStyles };

@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet } from "react-native";
 
 const { height } = Dimensions.get("window");
 
-export const onBoardingStyles = StyleSheet.create({
+const onBoardingStyles = StyleSheet.create({
     container: {
       flex: 1,
     },
@@ -43,3 +43,4 @@ export const onBoardingStyles = StyleSheet.create({
     },
   });
   
+module.exports = { onBoardingStyles };

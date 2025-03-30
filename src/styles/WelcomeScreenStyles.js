@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -51,3 +51,5 @@ export const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+
+module.exports = { styles };

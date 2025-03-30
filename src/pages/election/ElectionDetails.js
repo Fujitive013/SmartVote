@@ -13,6 +13,7 @@ import Constants from "expo-constants";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { electionStyles as styles } from "../../styles/ElectionStyles";
+import { API_BASE_URL } from "../../config/ApiConfig";
 
 const ElectionDetails = ({ route }) => {
   const { electionId } = route.params;
@@ -21,7 +22,6 @@ const ElectionDetails = ({ route }) => {
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [user, setUser] = useState(null);
   const [voteCounts, setVoteCounts] = useState({});
-  const API_KEY = Constants.expoConfig?.extra?.API_KEY;
 
   useEffect(() => {
     const initializeData = async () => {
@@ -44,14 +44,14 @@ const ElectionDetails = ({ route }) => {
       return;
     }
 
-    const token = await AsyncStorage.getItem("userToken");
+    const token = await AsyncStorage.getItem("token");
     if (!token) {
       console.error("No token found");
       return;
     }
 
     try {
-      const response = await axios.get(`${API_KEY}/votes/status`, {
+      const response = await axios.get(`${API_BASE_URL}/votes/status`, {
         params: {
           voter_id: user.id, // Use the user's ID
           election_id: electionId, // Use the current election ID
@@ -79,7 +79,7 @@ const ElectionDetails = ({ route }) => {
       }
 
       console.log("Fetching election details...");
-      const response = await axios.get(`${API_KEY}/elections/${electionId}`, {
+      const response = await axios.get(`${API_BASE_URL}/elections/${electionId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Add authorization header
         },
@@ -98,7 +98,7 @@ const ElectionDetails = ({ route }) => {
   };
 
   const fetchVoteCounts = async (candidates) => {
-    const token = await AsyncStorage.getItem("userToken"); // Retrieve the token
+    const token = await AsyncStorage.getItem("token");
     if (!token) {
       console.error("No token found");
       return;
@@ -108,7 +108,7 @@ const ElectionDetails = ({ route }) => {
     for (const candidate of candidates) {
       try {
         const response = await axios.get(
-          `${API_KEY}/votes/count/${candidate._id}`,
+          `${API_BASE_URL}/votes/count/${candidate._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Attach the token
@@ -145,7 +145,7 @@ const ElectionDetails = ({ route }) => {
   };
 
   const handleVote = async (candidateName, candidateId) => {
-    const token = await AsyncStorage.getItem("userToken"); // Retrieve the token
+    const token = await AsyncStorage.getItem("token");
     if (!token) {
       console.error("No token found");
       Alert.alert("Error", "You are not authorized to vote. Please log in.");
@@ -168,7 +168,7 @@ const ElectionDetails = ({ route }) => {
     console.log("Payload:", payload);
 
     try {
-      const response = await axios.post(`${API_KEY}/votes`, payload, {
+      const response = await axios.post(`${API_BASE_URL}/votes`, payload, {
         headers: {
           Authorization: `Bearer ${token}`, // Attach the token
         },

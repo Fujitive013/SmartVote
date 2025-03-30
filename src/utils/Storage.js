@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const storeUserData = async (user, token) => {
+const storeUserData = async (user, token) => {
   try {
     await AsyncStorage.setItem("userData", JSON.stringify(user));
     // Remove "Bearer " prefix before storing
@@ -12,7 +12,7 @@ export const storeUserData = async (user, token) => {
   }
 };
 
-export const getUserData = async () => {
+const getUserData = async () => {
   try {
     const user = await AsyncStorage.getItem("userData");
     return user ? JSON.parse(user) : null;
@@ -21,3 +21,5 @@ export const getUserData = async () => {
     return null;
   }
 };
+
+module.exports = { storeUserData, getUserData };

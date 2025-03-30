@@ -2,7 +2,7 @@ import { StyleSheet, Dimensions } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
-export const registerStyles = StyleSheet.create({
+const registerStyles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF",
     flex: 1,
@@ -288,3 +288,5 @@ export const registerStyles = StyleSheet.create({
     marginBottom: height * 0.02 
 },
 });
+
+module.exports = { registerStyles };

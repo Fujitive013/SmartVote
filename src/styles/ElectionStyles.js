@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const electionStyles = StyleSheet.create({
+const electionStyles = StyleSheet.create({
   candidateInfo: {
     flex: 1,
     justifyContent: "center",
@@ -89,3 +89,5 @@ export const electionStyles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
+module.exports = { electionStyles };

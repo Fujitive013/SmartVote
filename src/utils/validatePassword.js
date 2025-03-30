@@ -1,5 +1,5 @@
 // Password validation function
-export const validatePassword = (pass) => {
+const validatePassword = (pass) => {
   let criteria = 0;
 
   // Check for minimum length
@@ -15,3 +15,5 @@ export const validatePassword = (pass) => {
   }
   return false;
 };
+
+module.export = { validatePassword };
