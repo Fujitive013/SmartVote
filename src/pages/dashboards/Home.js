@@ -15,6 +15,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "../../config/ApiConfig";
 import { homeStyles as styles } from "../../styles/HomeStyles";
+import ElectionList from "../../components/ElectionList";
 
 const { width, height } = Dimensions.get("window");
 
@@ -72,7 +73,7 @@ const HomeNew = () => {
         return;
       }
 
-      const url = `${API_BASE_URL}/elections/getByBaranggay/${myCityId}/${myBarangayId}`;
+      const url = `${API_BASE_URL}/elections/getByLocation/${myCityId}/${myBarangayId}`;
       console.log("Fetching elections from:", url);
 
       const response = await axios.get(url, {
@@ -146,16 +147,6 @@ const HomeNew = () => {
     }
   };
 
-  //for candidate ni nga date
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   useEffect(() => {
     const updateDate = () => {
       const now = new Date();
@@ -181,25 +172,6 @@ const HomeNew = () => {
     if (currentHour < 18) return "Good Afternoon";
     return "Good Evening";
   };
-
-  const renderElectionItem = ({ item }) => (
-    <View style={styles.candidateContainer}>
-      <View style={styles.barangayCaptainContainer}>
-        <Text style={styles.barangayCaptainText}>{item.name}</Text>
-        <Text style={styles.barangayDateEnd}>{`End: ${formatDate(
-          item.end_date
-        )}`}</Text>
-        <TouchableOpacity
-          style={styles.voteButton}
-          onPress={() =>
-            navigation.navigate("Election Details", { electionId: item._id })
-          }
-        >
-          <Text style={styles.voteNowText}>Vote Now</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -232,7 +204,7 @@ const HomeNew = () => {
           style={styles.searchIcon}
         />
         <TextInput
-          placeholder="Search a candidate..."
+          placeholder="Search for a candidate"
           style={styles.inputSearch}
         />
       </View>
@@ -263,7 +235,15 @@ const HomeNew = () => {
       </View>
       <View style={styles.ongoingElectionsContainer}>
         <Text style={styles.ongoingElectionsText}>Ongoing Elections</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("View Candidate", {
+              elections: filteredElections,
+              userCityId: myCityId,
+              userBarangayId: myBarangayId,
+            })
+          }
+        >
           <Text style={styles.viewAllText}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -273,11 +253,9 @@ const HomeNew = () => {
             No ongoing elections available for your barangay.
           </Text>
         ) : (
-          <FlatList
-            data={filteredElections}
-            renderItem={renderElectionItem}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.electionList}
+          <ElectionList
+            elections={filteredElections}
+            emptyMessage="No ongoing elections available for your barangay."
           />
         )}
       </View>

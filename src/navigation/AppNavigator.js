@@ -5,9 +5,10 @@ import Login from "../pages/auth/Login";
 import WelcomeScreen from "../pages/auth/WelcomeScreen";
 import Register from "../pages/auth/Register";
 import Home from "../pages/dashboards/Home";
-import ElectionDetails from "../pages/election/ElectionDetails";
+import ElectionDetails from "../pages/election/phase2/ElectionDetails";
 import Results from "../pages/results/Results";
 import DashboardScreen from "../pages/dashboardScreen/DashboardScreen";
+import ViewCandidate from "../pages/election/phase1/ViewCandidate";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,7 +48,12 @@ export default function AppNavigator() {
       <Stack.Screen
         name="Election Details"
         component={ElectionDetails}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="View Candidate"
+        component={ViewCandidate}
+        options= {{ headerShown: false }}
       />
       <Stack.Screen
         name="Results"

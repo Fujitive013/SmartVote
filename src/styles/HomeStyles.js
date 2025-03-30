@@ -79,15 +79,15 @@ const homeStyles = StyleSheet.create({
     paddingLeft: height * 0.02,
   },
   searchIcon: {
-    width: width * 0.07,
-    height: height * 0.035,
+    width: width * 0.06,
+    height: height * 0.03,
     alignSelf: "center",
   },
   inputSearch: {
     fontFamily: "Montserrat-Regular",
     width: width * 1,
     paddingLeft: height * 0.02,
-    fontSize: 16,
+    fontSize: 14,
   },
   quickAccessContainer: {
     alignSelf: "flex-start",
@@ -173,7 +173,7 @@ const homeStyles = StyleSheet.create({
   barangayCaptainContainer: {
     backgroundColor: "#FFF",
     width: width * 0.9,
-    height: height * 0.18,
+    height: height * 0.15,
     paddingLeft: height * 0.02,
     borderRadius: 6,
     marginBottom: height * 0.02,
@@ -186,10 +186,17 @@ const homeStyles = StyleSheet.create({
     fontFamily: "Montserrat-Regular",
     top: height * 0.04,
   },
-  voteButton: {
-    top: height * 0.06,
+  voteImage: {
+    top: height * 0.02,
+    right: height * 0.01,
+    width: height * 0.05,        // Set appropriate width
+    height: height * 0.05,       // Set appropriate height
+    resizeMode: 'contain', // Optional: controls how image fits in space
+    marginTop: 8,     // Optional: add spacing if needed
+    alignSelf: 'flex-end' // Optional: center the image
   },
   voteNowText: {
+    top: height * 0.06,
     fontFamily: "Montserrat-Bold",
     fontSize: 17,
     color: "#111B56",
