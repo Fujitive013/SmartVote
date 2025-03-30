@@ -1,3 +1,4 @@
+import VoteList from "../../../components/VoteList";
 import {
   View,
   Image,
@@ -10,6 +11,7 @@ import { electionDetailsStyles as styles } from "../../../styles/electionDetails
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../../../config/ApiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserData } from "../../../utils/Storage";
 
 const ElectionDetails = ({ route }) => {
   const { electionId } = route.params || {};
@@ -17,29 +19,72 @@ const ElectionDetails = ({ route }) => {
   const [election, setElection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [candidates, setCandidates] = useState([]);
 
   useEffect(() => {
     const fetchElectionDetails = async () => {
+      setLoading(true);
       try {
-        if (!electionId) {
-          throw new Error("Invalid election ID");
+        const token = await AsyncStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          return;
         }
 
-        const token = await AsyncStorage.getItem("token"); // Retrieve the token from storage
-        const response = await fetch(
+        const user = await getUserData();
+        if (!user || !user.city_id || !user.baranggay_id) {
+          console.error("User data is incomplete or missing");
+          return;
+        }
+
+        // Fetch election details by electionId first
+        const electionResponse = await fetch(
           `${API_BASE_URL}/elections/${electionId}`,
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Include the token
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch election details");
+
+        if (!electionResponse.ok) {
+          throw new Error("Failed to fetch election details by electionId");
         }
-        const data = await response.json();
-        setElection(data);
+
+        const electionData = await electionResponse.json();
+        setElection(electionData);
+
+        // Use the election data to determine if it's city or barangay level
+        const locationUrl = electionData.baranggay_id
+          ? `${API_BASE_URL}/elections/getByLocation/${user.city_id}/${user.baranggay_id}`
+          : `${API_BASE_URL}/elections/getByLocation/${user.city_id}`;
+
+        const locationResponse = await fetch(locationUrl, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!locationResponse.ok) {
+          throw new Error("Failed to fetch election details by location");
+        }
+
+        const locationData = await locationResponse.json();
+
+        // Find the specific election that matches our electionId
+        const matchingElection = locationData.find(
+          (election) => election._id === electionId
+        );
+
+        // Set candidates from the matching election
+        setCandidates(matchingElection ? matchingElection.candidates : []);
+
+        // If no matching election was found, we could fall back to the candidates from electionData
+        if (!matchingElection && electionData.candidates) {
+          setCandidates(electionData.candidates);
+        }
       } catch (err) {
         console.error("Error fetching election details:", err.message);
         setError(err.message);
@@ -87,12 +132,12 @@ const ElectionDetails = ({ route }) => {
             <View style={styles.phasesContainer}>
               <View style={styles.phaseOne} />
               <View>
-                <View style={styles.phaseTwo}/>
-                  <View style={styles.subPhaseOne}>
-                    <Text style={styles.subPhaseTwoText}>
-                      Select a candidate to vote
-                    </Text>
-                  </View>
+                <View style={styles.phaseTwo} />
+                <View style={styles.subPhaseOne}>
+                  <Text style={styles.subPhaseTwoText}>
+                    Select a candidate to vote
+                  </Text>
+                </View>
               </View>
               <View style={styles.phaseThree} />
             </View>
@@ -109,6 +154,12 @@ const ElectionDetails = ({ route }) => {
           </View>
         </View>
       </View>
+      <VoteList
+        votes={candidates}
+        onVote={(candidateId) =>
+          console.log(`Voted for candidate ID: ${candidateId}`)
+        }
+      />
     </View>
   );
 };

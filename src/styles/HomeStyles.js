@@ -208,6 +208,19 @@ const homeStyles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
   },
+  voteNowButton: {
+    backgroundColor: "#4CAF50", // Green background
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  voteNowButtonText: {
+    color: "#FFF", // White text
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 module.exports = { homeStyles };

@@ -33,7 +33,8 @@ const HomeNew = () => {
   // Filter elections by user's barangay and city and exclude already voted ones
   const filteredElections = elections.filter((election) => {
     const isUserArea =
-      election.city_id === myCityId && election.baranggay_id === myBarangayId;
+      election.city_id === myCityId &&
+      (election.baranggay_id === myBarangayId || !election.baranggay_id);
 
     // Convert ObjectIDs to strings for comparison
     const hasVoted = user?.voted_elections?.some(
@@ -60,8 +61,8 @@ const HomeNew = () => {
 
   const fetchElections = async () => {
     try {
-      if (!myCityId || !myBarangayId) {
-        console.error("City ID or Barangay ID is missing.");
+      if (!myCityId) {
+        console.error("City ID is missing.");
         return;
       }
 
@@ -73,18 +74,37 @@ const HomeNew = () => {
         return;
       }
 
-      const url = `${API_BASE_URL}/elections/getByLocation/${myCityId}/${myBarangayId}`;
-      console.log("Fetching elections from:", url);
+      // Fetch city-level elections
+      const cityUrl = `${API_BASE_URL}/elections/getByLocation/${myCityId}`;
+      console.log("Fetching city-level elections from:", cityUrl);
 
-      const response = await axios.get(url, {
+      const cityResponse = await axios.get(cityUrl, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add Bearer prefix here
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      const electionsData = response.data;
-      setElections(electionsData);
-      setTotalElections(electionsData.length);
+      const cityElections = cityResponse.data;
+
+      // Fetch barangay-level elections
+      const barangayUrl = `${API_BASE_URL}/elections/getByLocation/${myCityId}/${myBarangayId}`;
+      console.log("Fetching barangay-level elections from:", barangayUrl);
+
+      const barangayResponse = await axios.get(barangayUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const barangayElections = barangayResponse.data;
+
+      // Combine city and barangay elections
+      const combinedElections = [...cityElections, ...barangayElections];
+
+      console.log("Combined Elections Data:", combinedElections);
+
+      setElections(combinedElections);
+      setTotalElections(combinedElections.length);
     } catch (error) {
       if (error.response) {
         if (error.response.status === 404) {
@@ -247,7 +267,7 @@ const HomeNew = () => {
           <Text style={styles.viewAllText}>View All</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ maxHeight: height * 0.28 }}>
+      <View style={{ maxHeight: height * 0.2 }}>
         {filteredElections.length === 0 ? (
           <Text style={styles.noElectionsText}>
             No ongoing elections available for your barangay.
