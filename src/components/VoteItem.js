@@ -108,7 +108,7 @@ const VoteItem = ({
   };
 
   const handleVoteAgain = () => {
-    navigation.navigate("Home")
+    navigation.navigate("Dashboard Screen")
   }
 
   return (
