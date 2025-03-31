@@ -9,6 +9,7 @@ import ElectionDetails from "../pages/election/phase2/ElectionDetails";
 import Results from "../pages/results/Results";
 import DashboardScreen from "../pages/dashboardScreen/DashboardScreen";
 import ViewCandidate from "../pages/election/phase1/ViewCandidate";
+import VoteDetails from "../pages/election/phase3/VoteDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +60,11 @@ export default function AppNavigator() {
         name="Results"
         component={Results}
         options={{ headerShown: true }}
+      />
+      <Stack.Screen
+        name="Vote Details"
+        component={VoteDetails}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

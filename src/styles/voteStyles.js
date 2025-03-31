@@ -45,15 +45,15 @@ const voteStyles = StyleSheet.create({
   candidatePartyContainer: {
     backgroundColor: "#EFF6FF",
     width: width * 0.6,
-    justifyContent: 'center',
+    justifyContent: "center",
     height: height * 0.03,
     borderRadius: 20,
   },
   candidateParty: {
     fontFamily: "Montserrat-Bold",
     fontSize: 14,
-    textAlign: 'center',
-    color: '#2563EB'
+    textAlign: "center",
+    color: "#2563EB",
   },
   voteNowButton: {
     backgroundColor: "#111B56",
@@ -68,6 +68,99 @@ const voteStyles = StyleSheet.create({
     color: "#F5F5F5",
     fontFamily: "Montserrat-Medium",
     textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(180, 180, 180, 0.6)",
+  },
+  modalContainer: {
+    width: width * 0.9,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    elevation: 5,
+  },
+  modalImage: {
+    width: width * 0.2,
+    height: height * 0.1,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Bold",
+    marginBottom: 10,
+    width: "100%",
+    textAlign: "center",
+    color: "#111B56",
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: "left",
+    marginBottom: 20,
+    fontFamily: "Montserrat-Regular",
+    color: "#111B56",
+  },
+  boldText: {
+    fontFamily: "Montserrat-Bold",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  yesButton: {
+    flex: 1,
+    backgroundColor: "#21C179",
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginRight: 5,
+  },
+  noButton: {
+    flex: 1,
+    backgroundColor: "#B90A0A",
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  successModalContainer: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+    elevation: 5,
+  },
+  successModalImage: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
+  },
+  successModalTitle: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Bold",
+    color: "#4CAF50",
+    marginBottom: 10,
+  },
+  successModalMessage: {
+    fontSize: 16,
+    fontFamily: "Montserrat-Regular",
+    color: "#333",
+    textAlign: "center",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
+  },
+  activeButton: {
+    backgroundColor: "#111B56",
   },
 });
 

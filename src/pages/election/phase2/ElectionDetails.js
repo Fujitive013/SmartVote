@@ -20,6 +20,8 @@ const ElectionDetails = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [candidates, setCandidates] = useState([]);
+  const [hasVoted, setHasVoted] = useState(false); // Tracks if the user has already voted
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
 
   useEffect(() => {
     const fetchElectionDetails = async () => {
@@ -85,6 +87,9 @@ const ElectionDetails = ({ route }) => {
         if (!matchingElection && electionData.candidates) {
           setCandidates(electionData.candidates);
         }
+
+        // Fetch voting status
+        await fetchVotingStatus(user.id, electionId, token);
       } catch (err) {
         console.error("Error fetching election details:", err.message);
         setError(err.message);
@@ -97,6 +102,33 @@ const ElectionDetails = ({ route }) => {
       fetchElectionDetails();
     }
   }, [electionId]);
+
+  const fetchVotingStatus = async (userId, electionId, token) => {
+    try {
+      // Properly format the URL with query parameters
+      const response = await fetch(
+        `${API_BASE_URL}/votes/status?voter_id=${userId}&election_id=${electionId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          // Remove the params property as it's not used by fetch
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch voting status");
+      }
+
+      const data = await response.json();
+      setHasVoted(data.hasVoted); // Set the voting status
+      setSelectedCandidate(data.voteDetails?.candidate_id || null);
+    } catch (error) {
+      console.error("Error fetching voting status:", error.message);
+    }
+  };
 
   if (loading) {
     return (
@@ -156,9 +188,15 @@ const ElectionDetails = ({ route }) => {
       </View>
       <VoteList
         votes={candidates}
-        onVote={(candidateId) =>
-          console.log(`Voted for candidate ID: ${candidateId}`)
-        }
+        electionId={electionId}
+        electionName={election?.name}
+        hasVoted={hasVoted} // Pass voting status to VoteList
+        selectedCandidate={selectedCandidate} // Pass selected candidate to VoteList
+        onVote={(candidateId) => {
+          console.log(`Voted for candidate ID: ${candidateId}`);
+          setHasVoted(true); // Update voting status
+          setSelectedCandidate(candidateId); // Update selected candidate
+        }}
       />
     </View>
   );
