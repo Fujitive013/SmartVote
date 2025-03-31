@@ -132,7 +132,7 @@ const voteStyles = StyleSheet.create({
     fontSize: 14,
   },
   successModalContainer: {
-    width: "80%",
+    width: width * 0.9,
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -142,19 +142,31 @@ const voteStyles = StyleSheet.create({
   successModalImage: {
     width: 80,
     height: 80,
-    marginBottom: 20,
   },
   successModalTitle: {
     fontSize: 18,
     fontFamily: "Montserrat-Bold",
-    color: "#4CAF50",
+    color: "#111B56",
     marginBottom: 10,
   },
   successModalMessage: {
     fontSize: 16,
     fontFamily: "Montserrat-Regular",
-    color: "#333",
-    textAlign: "center",
+    color: "#111B56",
+    textAlign: "left",
+  },
+  voteAgainButton:{
+    backgroundColor: "#111B56",
+    width: width * 0.5,
+    borderRadius: height * 0.015,
+    height: height * 0.05,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  voteAgainText:{
+    color: '#FFF',
+    fontFamily: "Montserrat-Medium",
   },
   disabledButton: {
     backgroundColor: "#ccc",

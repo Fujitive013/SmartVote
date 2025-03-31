@@ -11,7 +11,7 @@ import { dashboardScreenStyles as styles } from "../../styles/DashboardScreenSty
 // Icons
 const homeIcon = require("../../../assets/images/icon/home.png");
 const profileIcon = require("../../../assets/images/icon/profile.png");
-const resultIcon = require("../../../assets/images/icon/result.png");
+const resultIcon = require("../../../assets/images/icon/voteDashboard.png");
 
 // Screens
 import HomePage from "../dashboards/Home";

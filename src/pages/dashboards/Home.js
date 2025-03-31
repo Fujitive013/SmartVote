@@ -241,7 +241,7 @@ const HomeNew = () => {
               <Text style={styles.viewResultText}>View Result</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.monitorContainer}>
+          {/* <TouchableOpacity style={styles.monitorContainer}>
             <Image
               source={require("../../../assets/images/monitor.png")}
               style={styles.imageContainer}
@@ -250,7 +250,7 @@ const HomeNew = () => {
               <Text style={styles.monitorText}>Monitor</Text>
               <Text style={styles.checkVotesText}>Check votes</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
       <View style={styles.ongoingElectionsContainer}>

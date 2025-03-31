@@ -84,7 +84,7 @@ const VoteItem = ({
             candidateName: item.name,
             candidateParty: item.party,
           });
-        }, 2000); // Delay for 2 seconds
+        }, 50000000000000); // Delay for 2 seconds
       } else if (response.status === 400) {
         Alert.alert(
           "Error",
@@ -106,6 +106,10 @@ const VoteItem = ({
       setLoading(false); // Stop loading
     }
   };
+
+  const handleVoteAgain = () => {
+    navigation.navigate("Home")
+  }
 
   return (
     <View style={styles.candidateContainer}>
@@ -187,10 +191,15 @@ const VoteItem = ({
               source={require("../../assets/images/voteImage/success.png")}
               style={styles.successModalImage}
             />
-            <Text style={styles.successModalTitle}>Congratulations!</Text>
+            <Text style={styles.successModalTitle}>CONGRATS</Text>
             <Text style={styles.successModalMessage}>
-              You have successfully voted.
+              You have successfully voted{" "}
+              <Text style={styles.boldText}>{item.name}</Text> as the{" "}
+              <Text style={styles.boldText}>{electionName}</Text>
             </Text>
+            <TouchableOpacity style={styles.voteAgainButton} onPress={handleVoteAgain}>
+              <Text style={styles.voteAgainText}>Vote Again</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

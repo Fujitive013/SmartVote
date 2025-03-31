@@ -105,8 +105,8 @@ const homeStyles = StyleSheet.create({
     paddingLeft: height * 0.005,
   },
   resultContainer: {
-    backgroundColor: "#FFF",
-    width: width * 0.43,
+    backgroundColor: "#99C98F",
+    width: width * 0.9,
     height: height * 0.1,
     borderRadius: 5,
     flexDirection: "row",
