@@ -42,7 +42,7 @@ const voteDetailsStyles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
   },
   subPhaseOne: {
-    width: width * 0.28,
+    width: width * 0.29,
     alignItems: "center",
   },
   subPhaseTwoText: {
@@ -53,12 +53,12 @@ const voteDetailsStyles = StyleSheet.create({
   },
   phaseTwo: {
     backgroundColor: "#F5F5F5",
-    width: width * 0.28,
+    width: width * 0.29,
     height: height * 0.01,
   },
   phaseThree: {
     backgroundColor: "#21C179",
-    width: width * 0.28,
+    width: width * 0.29,
     height: height * 0.01,
   },
   searchContainer: {

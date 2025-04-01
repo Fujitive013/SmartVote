@@ -92,13 +92,12 @@ const candidateStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#111B56",
     height: height * 0.04,
-    backgroundColor: "#111B56",
     justifyContent: "center",
+    backgroundColor: "#F5F5F5",
   },
   cityText: {
     fontFamily: "Montserrat-Bold",
     textAlign: "center",
-    color: "#FFF",
     fontSize: 12,
   },
   barangayContainer: {
@@ -115,11 +114,18 @@ const candidateStyles = StyleSheet.create({
     textAlign: "center",
     fontSize: 12,
   },
-  errorIndicator:{
-    color: "red"
+  errorIndicator: {
+    color: "red",
   },
   infoElections: {
     top: height * 0.1,
+  },
+  selectedButton: {
+    backgroundColor: "#111B56", // Active background color
+    borderColor: "#111B56", // Active border color
+  },
+  selectedText: {
+    color: "#FFF", // Active text color
   },
 });
 

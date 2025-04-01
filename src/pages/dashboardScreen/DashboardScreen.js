@@ -4,9 +4,12 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { dashboardScreenStyles as styles } from "../../styles/DashboardScreenStyles";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { getUserData } from "../../utils/Storage";
 
 // Icons
 const homeIcon = require("../../../assets/images/icon/home.png");
@@ -16,10 +19,35 @@ const resultIcon = require("../../../assets/images/icon/voteDashboard.png");
 // Screens
 import HomePage from "../dashboards/Home";
 import Profile from "../dashboards/Profile";
-import Settings from "../dashboards/Settings";
+import Settings from "../election/phase1/ViewCandidate";
 
 const DashboardScreen = () => {
   const [activeTab, setActiveTab] = useState("Home");
+  const [cityId, setCityId] = useState(null);
+  const [barangayId, setBarangayId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  // Fetch user data to get city_id and barangay_id
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = await getUserData();
+        if (user) {
+          setCityId(user.city_id);
+          setBarangayId(user.baranggay_id);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Function to render the content based on the active tab
   const renderContent = () => {
@@ -29,11 +57,26 @@ const DashboardScreen = () => {
       case "Profile":
         return <Profile />;
       case "Result":
-        return <Settings />;
+        return (
+          <Settings
+            navigation={navigation}
+            route={route}
+            cityId={cityId} // Pass city_id
+            barangayId={barangayId} // Pass barangay_id
+          />
+        );
       default:
         return <HomePage />;
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
