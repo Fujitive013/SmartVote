@@ -130,14 +130,6 @@ const ElectionDetails = ({ route }) => {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
-
   if (error) {
     return (
       <View style={styles.container}>

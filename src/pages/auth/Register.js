@@ -60,7 +60,7 @@ const Register = () => {
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/locations/fetchCities`)
+    fetch(`${API_BASE_URL}/locations/fetchCitiesAll`)
       .then((response) => response.json())
       .then((data) => {
         setCities(data);

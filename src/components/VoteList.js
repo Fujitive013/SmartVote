@@ -2,6 +2,7 @@ import React from "react";
 import { FlatList, View, Text } from "react-native";
 import VoteItem from "./VoteItem";
 import { homeStyles as styles } from "../styles/HomeStyles";
+import LoadingScreen from "./LoadingScreen";
 
 const VoteList = ({
   votes,
@@ -10,7 +11,6 @@ const VoteList = ({
   electionName,
   hasVoted, // Receive hasVoted prop
   selectedCandidate,
-  emptyMessage = "No votes available",
 }) => {
   return (
     <FlatList
@@ -28,7 +28,7 @@ const VoteList = ({
       keyExtractor={(item) => item._id}
       contentContainerStyle={styles.electionList}
       ListEmptyComponent={
-        <Text style={styles.noElectionsText}>{emptyMessage}</Text>
+        <Text style={styles.noElectionsText}><LoadingScreen/></Text>
       }
     />
   );

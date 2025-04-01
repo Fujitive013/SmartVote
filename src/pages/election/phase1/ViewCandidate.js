@@ -11,6 +11,7 @@ import { candidateStyles as styles } from "../../../styles/candidateStyles";
 import { getUserData } from "../../../utils/Storage";
 import React, { useState, useEffect } from "react";
 import { fetchElectionsService } from "../../../services/elections";
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const ViewCandidate = ({ route, cityId, barangayId }) => {
   const [elections, setElections] = useState([]);
@@ -46,7 +47,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
 
   const fetchElections = async (filterType) => {
     try {
-      setLoading(true); // Start loading
+      <LoadingScreen/>
       setSelectedFilter(filterType); // Update the selected filter
 
       // Prioritize cityId and barangayId from props, then route.params, then userData
@@ -144,7 +145,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
           </View>
           <View style={styles.infoElections}>
             {loading ? (
-              <ActivityIndicator size="large" color="#c1c2c4" />
+              <LoadingScreen/>
             ) : error ? (
               <Text style={styles.errorIndicator}>{error}</Text>
             ) : (

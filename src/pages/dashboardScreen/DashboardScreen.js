@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import { dashboardScreenStyles as styles } from "../../styles/DashboardScreenStyles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getUserData } from "../../utils/Storage";
+import LoadingScreen from "../../components/LoadingScreen";
 
 // Icons
 const homeIcon = require("../../../assets/images/icon/home.png");
@@ -71,11 +72,7 @@ const DashboardScreen = () => {
   };
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
+    <LoadingScreen/>
   }
 
   return (
