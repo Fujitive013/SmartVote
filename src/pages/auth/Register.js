@@ -20,9 +20,7 @@ import { useCustomFonts } from "../../../assets/fonts/fonts";
 import { useNavigation } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import { API_BASE_URL } from "../../config/ApiConfig";
-import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
-import { validatePassword } from "../../utils/validatePassword";
 import { registerStyles as styles } from "../../styles/RegisterStyles";
 import { register } from "../../services/auth";
 
@@ -58,6 +56,24 @@ const Register = () => {
   // Error message state
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
+
+  // Password validation function
+  const validatePassword = (pass) => {
+    let criteria = 0;
+
+    // Check for minimum length
+    if (pass.length >= 6) {
+      // Check for uppercase
+      if (/[A-Z]/.test(pass)) criteria++;
+      // Check for special character
+      if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass)) criteria++;
+      // Check for number
+      if (/[0-9]/.test(pass)) criteria++;
+
+      return criteria >= 3;
+    }
+    return false;
+  };
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/locations/fetchCitiesAll`)
