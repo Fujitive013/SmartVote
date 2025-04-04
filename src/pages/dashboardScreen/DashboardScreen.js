@@ -36,6 +36,7 @@ const DashboardScreen = () => {
     const fetchUserData = async () => {
       try {
         const user = await getUserData();
+        console.log("Fetched user:", user); // 👈 Add this
         if (user) {
           setCityId(user.city_id);
           setBarangayId(user.baranggay_id);
@@ -72,7 +73,7 @@ const DashboardScreen = () => {
   };
 
   if (loading) {
-    <LoadingScreen/>
+    <LoadingScreen />;
   }
 
   return (
