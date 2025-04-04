@@ -12,6 +12,11 @@ import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../../../config/ApiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "../../../utils/Storage";
+import {
+  fetchElectionDetailsById,
+  fetchElectionDetailsByLocation,
+  fetchVotingStatus,
+} from "../../../services/ElectionService";
 
 const ElectionDetails = ({ route }) => {
   const { electionId } = route.params || {};
@@ -39,41 +44,16 @@ const ElectionDetails = ({ route }) => {
           return;
         }
 
-        // Fetch election details by electionId first
-        const electionResponse = await fetch(
-          `${API_BASE_URL}/elections/${electionId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!electionResponse.ok) {
-          throw new Error("Failed to fetch election details by electionId");
-        }
-
-        const electionData = await electionResponse.json();
+        // Fetch election details by electionId
+        const electionData = await fetchElectionDetailsById(electionId, token);
         setElection(electionData);
 
-        // Use the election data to determine if it's city or barangay level
-        const locationUrl = electionData.baranggay_id
-          ? `${API_BASE_URL}/elections/getByLocation/${user.city_id}/${user.baranggay_id}`
-          : `${API_BASE_URL}/elections/getByLocation/${user.city_id}`;
-
-        const locationResponse = await fetch(locationUrl, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!locationResponse.ok) {
-          throw new Error("Failed to fetch election details by location");
-        }
-
-        const locationData = await locationResponse.json();
+        // Fetch election details by location
+        const locationData = await fetchElectionDetailsByLocation(
+          user.city_id,
+          user.baranggay_id,
+          token
+        );
 
         // Find the specific election that matches our electionId
         const matchingElection = locationData.find(
@@ -83,13 +63,15 @@ const ElectionDetails = ({ route }) => {
         // Set candidates from the matching election
         setCandidates(matchingElection ? matchingElection.candidates : []);
 
-        // If no matching election was found, we could fall back to the candidates from electionData
+        // If no matching election was found, fall back to the candidates from electionData
         if (!matchingElection && electionData.candidates) {
           setCandidates(electionData.candidates);
         }
 
         // Fetch voting status
-        await fetchVotingStatus(user.id, electionId, token);
+        const votingStatus = await fetchVotingStatus(user.id, electionId, token);
+        setHasVoted(votingStatus.hasVoted);
+        setSelectedCandidate(votingStatus.voteDetails?.candidate_id || null);
       } catch (err) {
         console.error("Error fetching election details:", err.message);
         setError(err.message);
@@ -102,33 +84,6 @@ const ElectionDetails = ({ route }) => {
       fetchElectionDetails();
     }
   }, [electionId]);
-
-  const fetchVotingStatus = async (userId, electionId, token) => {
-    try {
-      // Properly format the URL with query parameters
-      const response = await fetch(
-        `${API_BASE_URL}/votes/status?voter_id=${userId}&election_id=${electionId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          // Remove the params property as it's not used by fetch
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch voting status");
-      }
-
-      const data = await response.json();
-      setHasVoted(data.hasVoted); // Set the voting status
-      setSelectedCandidate(data.voteDetails?.candidate_id || null);
-    } catch (error) {
-      console.error("Error fetching voting status:", error.message);
-    }
-  };
 
   if (error) {
     return (

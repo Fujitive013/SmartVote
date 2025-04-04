@@ -10,7 +10,7 @@ import {
 import { candidateStyles as styles } from "../../../styles/candidateStyles";
 import { getUserData } from "../../../utils/Storage";
 import React, { useState, useEffect } from "react";
-import { fetchElectionsService } from "../../../services/elections";
+import { fetchElections } from "../../../services/elections";
 import LoadingScreen from "../../../components/LoadingScreen";
 
 const ViewCandidate = ({ route, cityId, barangayId }) => {
@@ -41,13 +41,12 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
     if (!cityId && !barangayId && (!userCityId || !userBarangayId)) {
       fetchUserData();
     } else {
-      fetchElections("city");
+      fetchElectionsData("city");
     }
   }, [cityId, barangayId, userCityId, userBarangayId]);
 
-  const fetchElections = async (filterType) => {
+  const fetchElectionsData = async (filterType) => {
     try {
-      <LoadingScreen/>
       setSelectedFilter(filterType); // Update the selected filter
 
       // Prioritize cityId and barangayId from props, then route.params, then userData
@@ -59,11 +58,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
         throw new Error("City ID or Barangay ID is missing.");
       }
 
-      const data = await fetchElectionsService(
-        finalCityId,
-        finalBarangayId,
-        filterType
-      );
+      const data = await fetchElections(finalCityId, finalBarangayId);
       setElections(data);
     } catch (err) {
       setError(err.message);
@@ -113,7 +108,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
                 styles.cityContainer,
                 selectedFilter === "city" && styles.selectedButton, // Apply selected style if "City" is selected
               ]}
-              onPress={() => fetchElections("city")}
+              onPress={() => fetchElectionsData("city")}
             >
               <Text
                 style={[
@@ -131,7 +126,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
                 styles.barangayContainer,
                 selectedFilter === "barangay" && styles.selectedButton, // Apply selected style if "Barangay" is selected
               ]}
-              onPress={() => fetchElections("barangay")}
+              onPress={() => fetchElectionsData("barangay")}
             >
               <Text
                 style={[

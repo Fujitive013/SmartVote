@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
   Alert,
   Image,
   ScrollView,
 } from "react-native";
-import Constants from "expo-constants";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { electionStyles as styles } from "../../styles/ElectionStyles";
@@ -24,45 +22,43 @@ const ElectionDetails = ({ route }) => {
   const [voteCounts, setVoteCounts] = useState({});
 
   useEffect(() => {
-    const initializeData = async () => {
-      await fetchUserData(); // Fetch user data first
-    };
-
     initializeData();
   }, []);
 
   useEffect(() => {
     if (user) {
       fetchElectionDetails();
-      fetchUserVote(); // Only fetch vote status once user is available
+      fetchUserVote();
     }
   }, [user, electionId]);
 
-  const fetchUserVote = async () => {
-    if (!user) {
-      console.error("User data not available");
-      return;
-    }
+  const initializeData = async () => {
+    const userData = await fetchUserData();
+    setUser(userData);
+  };
 
-    const token = await AsyncStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
-
+  const fetchUserData = async () => {
     try {
+      const userData = await AsyncStorage.getItem("userData");
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      return null;
+    }
+  };
+
+  const fetchUserVote = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token || !user) return;
+
       const response = await axios.get(`${API_BASE_URL}/votes/status`, {
-        params: {
-          voter_id: user.id, // Use the user's ID
-          election_id: electionId, // Use the current election ID
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        params: { voter_id: user.id, election_id: electionId },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.hasVoted) {
-        setSelectedCandidate(response.data.voteDetails.candidate_id); // Set the selected candidate
+        setSelectedCandidate(response.data.voteDetails.candidate_id);
       }
     } catch (error) {
       console.error("Error fetching user's vote:", error);
@@ -72,129 +68,114 @@ const ElectionDetails = ({ route }) => {
   const fetchElectionDetails = async () => {
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem("token"); // Get token first
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
 
-      console.log("Fetching election details...");
       const response = await axios.get(`${API_BASE_URL}/elections/${electionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add authorization header
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("Election data received:", response.data);
+
       setElection(response.data);
       fetchVoteCounts(response.data.candidates);
     } catch (error) {
-      console.error("Error fetching election details:", error);
-      if (error.response?.status === 401) {
-        Alert.alert("Session Expired", "Please log in again");
-        // Optionally navigate to login screen
-      }
+      handleError(error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const fetchVoteCounts = async (candidates) => {
     const token = await AsyncStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
+    if (!token) return;
 
     const counts = {};
     for (const candidate of candidates) {
       try {
         const response = await axios.get(
           `${API_BASE_URL}/votes/count/${candidate._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Attach the token
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         counts[candidate._id] = response.data.voteCount;
       } catch (error) {
-        console.error(
-          "Error fetching vote count for candidate:",
-          candidate._id,
-          error
-        );
-        counts[candidate._id] = 0; // Default to 0 if there's an error
+        console.error(`Error fetching vote count for ${candidate._id}:`, error);
+        counts[candidate._id] = 0;
       }
     }
     setVoteCounts(counts);
   };
 
-  const fetchUserData = async () => {
-    try {
-      const userData = await AsyncStorage.getItem("userData");
-      console.log("Raw user data from storage:", userData);
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        console.log("Parsed user data:", parsedData);
-        setUser(parsedData);
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleVote = async (candidateName, candidateId) => {
-    const token = await AsyncStorage.getItem("token");
-    if (!token) {
-      console.error("No token found");
-      Alert.alert("Error", "You are not authorized to vote. Please log in.");
-      return;
-    }
-
-    const { first_name, last_name, id: voterId } = user;
-    const { _id: electionId, name: electionName } = election;
-
-    const payload = {
-      voter_id: voterId,
-      voter_first_name: first_name,
-      voter_last_name: last_name,
-      election_id: electionId,
-      election_name: electionName,
-      candidate_id: candidateId,
-      candidate_name: candidateName,
-    };
-
-    console.log("Payload:", payload);
-
     try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token || !user || !election) return;
+
+      const payload = {
+        voter_id: user.id,
+        voter_first_name: user.first_name,
+        voter_last_name: user.last_name,
+        election_id: election._id,
+        election_name: election.name,
+        candidate_id: candidateId,
+        candidate_name: candidateName,
+      };
+
       const response = await axios.post(`${API_BASE_URL}/votes`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Attach the token
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 201) {
         Alert.alert("Vote Successful", `You have voted for ${candidateName}`);
-        fetchVoteCounts(election.candidates); // Refresh vote counts
-      } else if (response.status === 400) {
-        Alert.alert("Error", "You have already voted in this election");
+        fetchVoteCounts(election.candidates);
       } else {
-        Alert.alert(
-          "Error",
-          response.data.error ||
-            "There was an issue casting your vote. Please try again."
-        );
+        handleVoteError(response);
       }
     } catch (error) {
-      console.error("Error during voting:", error);
-      Alert.alert(
-        "Error",
-        error.response?.data?.error ||
-          "There was an issue with your request. Please try again later."
-      );
+      handleVoteError(error.response);
     }
   };
+
+  const handleVoteError = (response) => {
+    const errorMessage =
+      response?.data?.error || "An error occurred while casting your vote.";
+    Alert.alert("Error", errorMessage);
+  };
+
+  const handleError = (error) => {
+    console.error("Error fetching election details:", error);
+    if (error.response?.status === 401) {
+      Alert.alert("Session Expired", "Please log in again");
+    }
+  };
+
+  const renderCandidate = (candidate) => (
+    <View key={candidate._id} style={styles.candidateItem}>
+      <Image
+        source={require("../../../assets/user.png")}
+        style={styles.candidateImage}
+      />
+      <View style={styles.candidateInfo}>
+        <Text style={styles.candidateName}>{candidate.name}</Text>
+        <Text style={styles.candidateParty}>{candidate.party}</Text>
+        <Text style={styles.voteCountText}>
+          Votes: {voteCounts[candidate._id] || 0}
+        </Text>
+      </View>
+      <TouchableOpacity
+        style={[
+          styles.voteButton,
+          selectedCandidate === candidate._id
+            ? styles.disabledButton
+            : styles.activeButton,
+        ]}
+        onPress={() => handleVote(candidate.name, candidate._id)}
+        disabled={selectedCandidate === candidate._id}
+      >
+        <Text style={styles.voteButtonText}>
+          {selectedCandidate === candidate._id ? "Voted" : "Vote"}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   if (loading) {
     return (
@@ -220,45 +201,10 @@ const ElectionDetails = ({ route }) => {
         Deadline: {new Date(election.end_date).toDateString()}
       </Text>
       <Text style={styles.description}>{election.description}</Text>
-
       <Text style={styles.candidateTitle}>Candidates:</Text>
       <ScrollView>
-        {election.candidates && election.candidates.length > 0 ? (
-          election.candidates.map((candidate) => (
-            <View key={candidate._id} style={styles.candidateItem}>
-              <Image
-                source={require("../../../assets/user.png")}
-                style={styles.candidateImage}
-              />
-              <View style={styles.candidateInfo}>
-                <Text style={styles.candidateName}>{candidate.name}</Text>
-                <Text style={styles.candidateParty}>{candidate.party}</Text>
-                <Text style={styles.voteCountText}>
-                  Votes: {voteCounts[candidate._id] || 0}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={[
-                  styles.voteButton,
-                  selectedCandidate?._id === candidate._id
-                    ? styles.disabledButton
-                    : styles.activeButton,
-                ]}
-                onPress={() => {
-                  console.log(
-                    "handleVote triggered for:",
-                    candidate.name,
-                    candidate._id
-                  );
-                  handleVote(candidate.name, candidate._id);
-                }}
-              >
-                <Text style={styles.voteButtonText}>
-                  {selectedCandidate === candidate._id ? "Voted" : "Vote"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ))
+        {election.candidates?.length > 0 ? (
+          election.candidates.map(renderCandidate)
         ) : (
           <Text style={styles.noCandidatesText}>No candidates available.</Text>
         )}
