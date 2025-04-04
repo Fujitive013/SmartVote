@@ -5,9 +5,9 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "../../config/ApiConfig";
 import { homeStyles as styles } from "../../styles/HomeStyles";
-import VoteCounter from "./components/VoteCounter";
-import QuickAccess from "./components/QuickAccess";
-import OngoingElections from "./components/OngoingElections";
+import VoteCounter from "./Home/components/VoteCounter";
+import QuickAccess from "./Home/components/QuickAccess";
+import OngoingElections from "./Home/components/OngoingElections";
 import { fetchElections } from "../../services/elections";
 
 const Home = () => {
@@ -53,23 +53,59 @@ const Home = () => {
 
   useEffect(() => {
     const now = new Date();
-    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
     setCurrentDate(now.toLocaleDateString("en-US", options));
   }, []);
+
+  const getGreeting = () => {
+    const now = new Date();
+    // Convert to Philippine Time (UTC+8)
+    const phTime = new Date(
+      now.toLocaleString("en-US", { timeZone: "Asia/Manila" })
+    );
+    const hour = phTime.getHours();
+
+    if (hour >= 5 && hour < 12) {
+      return "Good morning";
+    } else if (hour >= 12 && hour < 18) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        <Text style={styles.date}>{currentDate}</Text>
-        <Text style={styles.greetingsText}>Hello, {user?.first_name}!</Text>
+        <View style={styles.textWrapper}>
+          <Text style={styles.date}>{currentDate}</Text>
+          <Text style={styles.greetingsText}>
+            {getGreeting()}, {user?.first_name}!
+          </Text>
+        </View>
         <VoteCounter voteCount={voteCount} totalElections={totalElections} />
       </View>
       <View style={styles.searchContainer}>
-        <Image source={require("../../../assets/images/search.png")} style={styles.searchIcon} />
-        <TextInput placeholder="Search for a candidate" style={styles.inputSearch} />
+        <Image
+          source={require("../../../assets/images/search.png")}
+          style={styles.searchIcon}
+        />
+        <TextInput
+          placeholder="Search for a candidate"
+          style={styles.inputSearch}
+        />
       </View>
       <QuickAccess />
-      <OngoingElections elections={elections} navigation={navigation} />
+      <OngoingElections
+        elections={elections}
+        navigation={navigation}
+        user={user}
+      />
     </View>
   );
 };

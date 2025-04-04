@@ -10,17 +10,17 @@ import {
 import { candidateStyles as styles } from "../../../styles/candidateStyles";
 import { getUserData } from "../../../utils/Storage";
 import React, { useState, useEffect } from "react";
-import { fetchElections } from "../../../services/elections";
+import { fetchElectionsService } from "../../../services/elections";
 import LoadingScreen from "../../../components/LoadingScreen";
 
-const ViewCandidate = ({ route, cityId, barangayId }) => {
+const ViewCandidate = ({ route }) => {
   const [elections, setElections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("city");
 
-  const { userCityId, userBarangayId } = route.params || {};
+  const { cityId, barangayId } = route.params || {};
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -29,7 +29,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
         setUserData(user);
 
         if (user) {
-          await fetchElections("city");
+          await fetchElectionsData("city", user.city_id, user.baranggay_id);
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -37,28 +37,27 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
       }
     };
 
-    // Use cityId and barangayId from props, route.params, or userData
-    if (!cityId && !barangayId && (!userCityId || !userBarangayId)) {
+    if (!cityId && !barangayId) {
       fetchUserData();
     } else {
-      fetchElectionsData("city");
+      fetchElectionsData("city", cityId, barangayId);
     }
-  }, [cityId, barangayId, userCityId, userBarangayId]);
+  }, [cityId, barangayId]);
 
-  const fetchElectionsData = async (filterType) => {
+  const fetchElectionsData = async (filterType, finalCityId, finalBarangayId) => {
     try {
-      setSelectedFilter(filterType); // Update the selected filter
+      setSelectedFilter(filterType);
 
-      // Prioritize cityId and barangayId from props, then route.params, then userData
-      const finalCityId = cityId || userCityId || userData?.city_id;
-      const finalBarangayId =
-        barangayId || userBarangayId || userData?.baranggay_id;
-
-      if (!finalCityId || !finalBarangayId) {
-        throw new Error("City ID or Barangay ID is missing.");
+      if (!finalCityId) {
+        throw new Error("City ID is missing.");
       }
 
-      const data = await fetchElections(finalCityId, finalBarangayId);
+      const data = await fetchElectionsService(
+        finalCityId,
+        filterType === "barangay" ? finalBarangayId : null,
+        filterType
+      );
+
       setElections(data);
     } catch (err) {
       setError(err.message);
@@ -108,7 +107,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
                 styles.cityContainer,
                 selectedFilter === "city" && styles.selectedButton, // Apply selected style if "City" is selected
               ]}
-              onPress={() => fetchElectionsData("city")}
+              onPress={() => fetchElectionsData("city", cityId, barangayId)}
             >
               <Text
                 style={[
@@ -126,7 +125,7 @@ const ViewCandidate = ({ route, cityId, barangayId }) => {
                 styles.barangayContainer,
                 selectedFilter === "barangay" && styles.selectedButton, // Apply selected style if "Barangay" is selected
               ]}
-              onPress={() => fetchElectionsData("barangay")}
+              onPress={() => fetchElectionsData("barangay", cityId, barangayId)}
             >
               <Text
                 style={[

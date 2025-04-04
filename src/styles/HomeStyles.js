@@ -8,6 +8,11 @@ const homeStyles = StyleSheet.create({
     backgroundColor: "#DBDEF1",
     alignItems: "center",
   },
+  textWrapper: {
+    alignSelf: "flex-start",
+    paddingLeft: height * 0.03,
+    paddingTop: height * 0.05,
+  },
   subContainer: {
     backgroundColor: "#111B56",
     width: width * 1,
@@ -189,11 +194,11 @@ const homeStyles = StyleSheet.create({
   voteImage: {
     top: height * 0.02,
     right: height * 0.01,
-    width: height * 0.05,        // Set appropriate width
-    height: height * 0.05,       // Set appropriate height
-    resizeMode: 'contain', // Optional: controls how image fits in space
-    marginTop: 8,     // Optional: add spacing if needed
-    alignSelf: 'flex-end' // Optional: center the image
+    width: height * 0.05, // Set appropriate width
+    height: height * 0.05, // Set appropriate height
+    resizeMode: "contain", // Optional: controls how image fits in space
+    marginTop: 8, // Optional: add spacing if needed
+    alignSelf: "flex-end", // Optional: center the image
   },
   voteNowText: {
     top: height * 0.06,
