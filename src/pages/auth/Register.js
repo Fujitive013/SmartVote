@@ -44,7 +44,7 @@ const Register = () => {
   const [showPasswordRequirements, setShowPasswordRequirements] =
     useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [fontsLoaded, setFontsLoaded] = useState(true); // Adjust this based on your font loading setup
+  const [fontsLoaded, setFontsLoaded] = useState(true); 
 
   // Password validation function
   const validatePassword = (pass) => {
