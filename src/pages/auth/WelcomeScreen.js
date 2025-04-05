@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  Dimensions,
-  ImageBackground,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, ImageBackground, Text, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useCustomFonts } from "../../../assets/fonts/fonts";
 import { useNavigation } from "@react-navigation/native";
@@ -33,11 +28,14 @@ const WelcomeScreen = () => {
       style={styles.container}
       resizeMode="cover"
     >
-      <View>
+      <View style={styles.titleContainer}>
         <Text style={styles.welcomeText}>Welcome to E-boto</Text>
-        <Text style={styles.subwelcomeText}>Where voting is made effortless.</Text>
-        <WelcomeButtons navigation={navigation} />
+        <Text style={styles.subwelcomeText}>
+          Where voting is made effortless.
+        </Text>
       </View>
+
+      <WelcomeButtons navigation={navigation} />
     </ImageBackground>
   );
 };

@@ -1,11 +1,13 @@
 import { StyleSheet, Dimensions } from "react-native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-const { width, height } = Dimensions.get("window");
+const{ height, width } = Dimensions.get("window");
 
 const registerStyles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF",
     flex: 1,
+    
   },
   scrollContainer: {
     flexGrow: 1,
@@ -13,97 +15,112 @@ const registerStyles = StyleSheet.create({
   },
   createText: {
     fontFamily: "Montserrat-Bold",
-    fontSize: 32,
+    fontSize: hp(4),
   },
   signUpContainer: {
-    width: height * 0.45,
-    marginTop: height * 0.1,
-    marginBottom: height * 0.05, // Add bottom margin for scrolling space
+    width: wp(100),
+    marginVertical: hp(9), 
     justifyContent: "center",
+    
+  },
+  labelContainer: {
+    paddingHorizontal: hp(2),
   },
   signUpText: {
     fontFamily: "Montserrat-Medium",
     fontSize: 14,
-    marginBottom: height * 0.04,
   },
   errorSnackbar: {
     backgroundColor: "#FF3B30",
-    padding: 10,
+    marginHorizontal: hp(2),
+    padding: hp(2),
     borderRadius: 6,
     marginBottom: 15,
   },
   errorSnackbarText: {
     color: "#FFF",
     fontFamily: "Montserrat-Medium",
-    fontSize: 14,
+    fontSize: hp(1.7),
     textAlign: "center",
   },
+  inputContainer: {
+    gap: hp(2),
+    width: wp(100),
+    paddingHorizontal: hp(2),
+    marginTop: hp(2),
+    alignSelf: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
   firstNameInput: {
+    height: hp(6),
     borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
     borderColor: "#000",
     borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
+    fontSize: hp(1.8),
+    paddingLeft: hp(1.5),
+
   },
   lastNameInput: {
+    height: hp(6),
     borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
     borderColor: "#000",
     borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
+    fontSize: hp(1.8),
+    paddingLeft: hp(1.5),
   },
   emailInput: {
+    height: hp(6),
     borderRadius: 10,
-    height: height * 0.07,
-    paddingLeft: height * 0.02,
     borderColor: "#000",
     borderWidth: 1,
-    marginBottom: height * 0.02,
-    fontSize: 16,
+    fontSize: hp(1.8),
+    paddingLeft: hp(1.5),
   },
   passwordContainer: {
-    width: "100%",
-    position: "relative",
+    width: wp(100),
+    paddingHorizontal: hp(2),
+    alignSelf: "center",
+    flex: 1,
+    justifyContent: "center",
+    marginTop: hp(2),
   },
   passwordInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    paddingRight: height * 0.08,
+    height: hp(6),
     borderRadius: 10,
+    borderColor: "#000",
     borderWidth: 1,
-    width: "100%",
+    fontSize: hp(1.8),
+    paddingLeft: hp(1.5),
+
   },
   confirmPasswordInput: {
-    height: height * 0.07,
-    fontSize: 16,
-    paddingLeft: height * 0.02,
-    paddingRight: height * 0.08,
+    height: hp(6),
     borderRadius: 10,
+    borderColor: "#000",
     borderWidth: 1,
-    marginBottom: 10,
-    width: "100%",
+    fontSize: hp(1.8),
+    paddingLeft: hp(1.5),
   },
   inputError: {
     borderColor: "red",
   },
+  inputValid: {
+    borderColor: "green",
+  },
   errorText: {
     color: "red",
     fontSize: 12,
-    marginTop: 5,
-    marginBottom: 5,
+    marginHorizontal: hp(2),
+    marginVertical: hp(1),
     fontFamily: "Montserrat-Medium",
   },
   requirementsContainer: {
     backgroundColor: "#E6E6F8",
     borderRadius: 8,
-    padding: 12,
-    marginTop: 8,
-    marginBottom: 8,
+    padding: hp(2),
+    marginHorizontal: hp(2),
+    marginVertical: hp(2),
   },
   requirementsText: {
     fontSize: 14,
@@ -120,68 +137,82 @@ const registerStyles = StyleSheet.create({
   },
   emojiContainer: {
     position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -12 }],
+    right: hp(4),
   },
   eyeIcon: {
-    width: 30,
-    height: 20,
+    width: wp(6.5),
+    height: hp(2),
     tintColor: "#1E1E1E",
   },
-  pickerContainer: {
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#000",
-    height: height * 0.07,
+  locationContainer: {
+    gap: hp(1),
+    width: wp(90),
+    paddingHorizontal: hp(0),
+    paddingVertical: hp(2)  ,
+    alignSelf: "center",
+    flex: 1,
     justifyContent: "center",
-    marginBottom: height * 0.02,
-  },
-  picker: {
-    fontSize: 16,
-    paddingLeft: height * 0.02,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: height * 0.01,
+    fontSize: hp(1.5),
+    fontFamily: "Montserrat-Bold",
+  },
+  pickerContainer: {
+    width: wp(90),
+    height: hp(6),
+    alignSelf: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 10,
+    
+  },
+  picker: {
+    borderColor: "#000",
+    borderWidth: 1,
+    fontSize: hp(1.8),
+    color: "zyyyyyy",
+
   },
   conditionContainer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: height * 0.01,
+    marginHorizontal: hp(2),
+    
   },
   checkbox: {
-    width: 20,
+    width: wp(5),
     borderRadius: 2,
-    height: 20,
+    height: hp(2.5),
     borderWidth: 2,
-    borderColor: "#000",
+    borderColor: "#111B56D4",
     justifyContent: "center",
     alignItems: "center",
+ 
   },
   checked: {
-    backgroundColor: "#000",
+    backgroundColor: "#111B56D4",
   },
   checkmark: {
-    color: "#fff",
-    fontSize: 14,
+    color: "white",
+    fontSize: hp(1.5),
     textAlign: "center",
-    lineHeight: 20,
   },
   text: {
-    marginLeft: height * 0.02,
-    fontSize: 13,
+    fontSize: hp(1.5),
     color: "#000",
     fontFamily: "Montserrat-Regular",
+    paddingHorizontal: hp(2),
   },
   continueContainer: {
     backgroundColor: "#111B56D4",
-    borderRadius: 20,
-    height: height * 0.07,
-    justifyContent: "center",
-    top: height * 0.01,
-    marginBottom: height * 0.03,
+    borderRadius: 50,
+    height: hp(6),
+    width: wp(90),
+    alignSelf: "center",  
+    justifyContent  : "center",
+    marginVertical: hp(2),
+
   },
   continueText: {
     color: "#FFFFFF",
@@ -204,19 +235,22 @@ const registerStyles = StyleSheet.create({
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: height * 0.01,
+    justifyContent: "center",
+    marginVertical: hp(2),
   },
+  
   line: {
-    flex: 1,
+    flex: 1, 
     height: 1,
-    backgroundColor: "#000", // Adjust color if needed
+    backgroundColor: "#000",
+    marginHorizontal: hp(1.5), 
   },
+  
   orText: {
-    marginHorizontal: 10,
-    fontSize: 16,
-    color: "#000",
-    fontFamily: "Montserrat-Medium",
+    fontSize: hp(1.8),
+    fontFamily: "Montserrat-Bold",
   },
+  
   socialLoginContainer: {
     flexDirection: "row",
     alignSelf: "center",
@@ -284,9 +318,7 @@ const registerStyles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     textAlign: "center",
   },
-  gapSpace: { 
-    marginBottom: height * 0.02 
-},
+
 });
 
 module.exports = { registerStyles };

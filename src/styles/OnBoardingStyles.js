@@ -1,6 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-const { height } = Dimensions.get("window");
+const{ height, width } = Dimensions.get("window");
 
 const onBoardingStyles = StyleSheet.create({
     container: {
@@ -10,33 +11,38 @@ const onBoardingStyles = StyleSheet.create({
       ...StyleSheet.absoluteFillObject,
       backgroundColor: "rgba(245, 245, 245, 0.4)",
     },
+    textWrapper: {
+      marginTop: hp('18'),
+      justifyContent: "center",
+      alignItems: "center",
+    },
     titleText: {
       color: "#111B56",
-      fontSize: 60,
+      fontSize: hp(7),
       textAlign: "center",
       fontFamily: "Montserrat-Bold",
-      marginTop: height * 0.08,
     },
     subTitleText: {
       color: "#111B56",
-      bottom: height * 0.020,
-      fontSize: 20,
+      bottom: hp(1.5),
+      fontSize: hp(2.2),
       textAlign: "center",
       fontFamily: "Montserrat-Medium",
     },
     buttonContainer:{
       backgroundColor: '#111B56D4',
-      padding: height * 0.015,
+      padding: hp(2),
       borderRadius: 20,
-      width: '90%',
+      width: wp('90'),
+      height: hp('7'),
       alignSelf: 'center',
-      top: height * 0.6,
+      marginTop: hp('55'),
     },
     buttonText:{
       color: '#FFF',
-      fontFamily: 'Inter-Regular',
-      fontSize: 24,
-      textAlign: 'center'
+      fontFamily: "Montserrat-Medium",
+      fontSize: hp(2),
+      textAlign: 'center',
     },
     image: {
       flex: 1

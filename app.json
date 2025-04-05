@@ -26,7 +26,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "API_KEY": "http://192.168.1.4:3000",
+      "API_KEY": "https://smart-vote-backend.vercel.app",
       "eas": {
         "projectId": "76207cd5-08c0-4aa6-b248-d6869673c6d8"
       }

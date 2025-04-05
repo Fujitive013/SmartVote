@@ -43,10 +43,7 @@ const LoginNew = () => {
         Alert.alert("Success", "Login successful!");
         navigation.navigate("Dashboard Screen");
       } else {
-        Alert.alert(
-          "Login failed",
-          response?.error || "Invalid credentials."
-        );
+        Alert.alert("Login failed", response?.error || "Invalid credentials.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -87,7 +84,7 @@ const LoginNew = () => {
             style={styles.passwordInput}
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={!passwordVisible}
+            secureTextEntry={passwordVisible}
           />
           <TouchableOpacity
             style={styles.emojiContainer}
@@ -112,12 +109,14 @@ const LoginNew = () => {
         <TouchableOpacity style={styles.forgotContainer}>
           <Text style={styles.forgotText}>Forgot password?</Text>
         </TouchableOpacity>
+
         <View style={styles.accountContainer}>
           <Text style={styles.dontText}>Don't have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate("SignUpNew")}>
             <Text style={styles.createText}>Create now.</Text>
           </TouchableOpacity>
         </View>
+
       </View>
     </View>
   );

@@ -44,7 +44,7 @@ const Register = () => {
   const [showPasswordRequirements, setShowPasswordRequirements] =
     useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [fontsLoaded, setFontsLoaded] = useState(true); 
+  const [fontsLoaded, setFontsLoaded] = useState(true);
 
   // Password validation function
   const validatePassword = (pass) => {
@@ -117,13 +117,13 @@ const Register = () => {
       !selectedCities ||
       !selectedBarangay
     ) {
-      setErrorMessage("Please fill out all required fields");
+      setErrorMessage("Please fill out all fields to continue");
       setShowError(true);
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
+      setErrorMessage("Password does not match");
       setShowError(true);
       return;
     }
@@ -181,12 +181,12 @@ const Register = () => {
     }
   };
 
-  // Auto-hide error message after 3 seconds
+  // Auto-hide error message after 5 seconds
   useEffect(() => {
     if (showError) {
       const timer = setTimeout(() => {
         setShowError(false);
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -230,11 +230,13 @@ const Register = () => {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.signUpContainer}>
-              <Text style={styles.createText}>Create an account</Text>
-              <Text style={styles.signUpText}>
-                Sign up to make your voice count! Create your account to
-                securely cast your vote.
-              </Text>
+              <View style={styles.labelContainer}>
+                <Text style={styles.createText}>Create an account</Text>
+                <Text style={styles.signUpText}>
+                  Sign up to make your voice count! Create your account to
+                  securely cast your vote.
+                </Text>
+              </View>
 
               {/* Error message snackbar */}
               {showError && (
@@ -264,34 +266,38 @@ const Register = () => {
                 </View>
               )}
 
-              <TextInput
-                placeholder="First Name*"
-                style={styles.firstNameInput}
-                value={firstName}
-                onChangeText={setFirstName}
-              />
-              <TextInput
-                placeholder="Last Name*"
-                style={styles.lastNameInput}
-                value={lastName}
-                onChangeText={setLastName}
-              />
-              <TextInput
-                placeholder="Email*"
-                style={styles.emailInput}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
+              <View style={styles.inputContainer}>
+                <TextInput
+                  placeholder="First Name*"
+                  style={styles.firstNameInput}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+                <TextInput
+                  placeholder="Last Name*"
+                  style={styles.lastNameInput}
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+                <TextInput
+                  placeholder="Email*"
+                  style={styles.emailInput}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
               <View style={styles.passwordContainer}>
                 <TextInput
                   placeholder="Password*"
                   style={[
                     styles.passwordInput,
                     !passwordValid && password.length > 0 && styles.inputError,
+                    passwordValid && password.length > 0 && styles.inputValid,
                   ]}
-                  secureTextEntry={!passwordVisible}
+                  secureTextEntry={passwordVisible}
                   value={password}
                   onChangeText={setPassword}
                   onFocus={() => setShowPasswordRequirements(true)}
@@ -327,7 +333,6 @@ const Register = () => {
                 </View>
               )}
 
-              <View style={styles.gapSpace} />
               <View style={styles.passwordContainer}>
                 <TextInput
                   placeholder="Confirm Password*"
@@ -336,8 +341,9 @@ const Register = () => {
                     !passwordsMatch &&
                       confirmPassword.length > 0 &&
                       styles.inputError,
+                      confirmPassword.length > 0 && passwordsMatch && styles.inputValid
                   ]}
-                  secureTextEntry={!confirmPasswordVisible}
+                  secureTextEntry={confirmPasswordVisible}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                 />
@@ -359,9 +365,10 @@ const Register = () => {
               </View>
 
               {!passwordsMatch && confirmPassword.length > 0 && (
-                <Text style={styles.errorText}>Passwords do not match</Text>
+                <Text style={styles.errorText}>Password does not match</Text>
               )}
 
+              <View style={styles.locationContainer}>
               <Text style={styles.label}>Select City:</Text>
               {loading ? (
                 <ActivityIndicator size="large" color="blue" />
@@ -376,12 +383,14 @@ const Register = () => {
                       label="Select a City"
                       value=""
                       color="#bebebe"
+                      
                     />
                     {cities.map((city) => (
                       <Picker.Item
                         key={city._id}
                         label={city.name}
                         value={city._id}
+          
                       />
                     ))}
                   </Picker>
@@ -410,6 +419,8 @@ const Register = () => {
                   ))}
                 </Picker>
               </View>
+              </View>
+      
 
               <View style={styles.conditionContainer}>
                 <Pressable

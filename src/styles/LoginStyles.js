@@ -1,17 +1,22 @@
 import { StyleSheet, Dimensions } from "react-native";
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-const { height } = Dimensions.get("window");
+const{ height, width } = Dimensions.get("window");
 
 const loginStyles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     flex: 1,
     alignItems: "center",
+    justifyContent: "space-between",
+    
   },
   loginContainer: {
-    top: height * 0.1,
     justifyContent: "center",
-    width: height * 0.45,
+    width: wp(100),
+    paddingHorizontal: hp(2),
+    marginVertical: hp(12),
+
   },
   loginText: {
     fontFamily: "Montserrat-Bold",
@@ -23,7 +28,7 @@ const loginStyles = StyleSheet.create({
     marginBottom: height * 0.05,
   },
   emailInput: {
-    height: height * 0.07,
+    height: hp(6),
     fontSize: 16,
     paddingLeft: height * 0.02,
     borderRadius: 10,
@@ -35,7 +40,7 @@ const loginStyles = StyleSheet.create({
     width: "100%",
   },
   passwordInput: {
-    height: height * 0.07,
+    height: hp(6),
     fontSize: 16,
     paddingLeft: height * 0.02,
     paddingRight: height * 0.08,
@@ -45,19 +50,19 @@ const loginStyles = StyleSheet.create({
   },
   emojiContainer: {
     position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -12 }],
+    right: hp(2),
+    top: hp(2),
+    
   },
   eyeIcon: {
-    width: 30,
-    height: 20,
+    width: wp(6.5),
+    height: hp(2),
     tintColor: "#1E1E1E",
   },
   continueContainer: {
     backgroundColor: "#111B56D4",
-    borderRadius: 20,
-    height: height * 0.07,
+    borderRadius: 50,
+    height: hp(6),
     justifyContent: "center",
     top: height * 0.03,
     marginBottom: height * 0.05,
@@ -78,8 +83,9 @@ const loginStyles = StyleSheet.create({
   },
   accountContainer: {
     flexDirection: "row",
-    top: height * 0.3,
     justifyContent: "center",
+    alignItems: "center",
+    marginTop: hp(45),
   },
   dontText: {
     fontFamily: "Montserrat-Medium",

@@ -1,8 +1,15 @@
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { useCustomFonts } from "../../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import { onBoardingStyles as styles } from "../../styles/OnBoardingStyles";
 
 SplashScreen.preventAutoHideAsync();
@@ -12,8 +19,8 @@ const OnBoarding = () => {
   const navigation = useNavigation();
 
   const votePress = () => {
-    navigation.navigate('WelcomeScreen')
-  }
+    navigation.navigate("WelcomeScreen");
+  };
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -34,10 +41,14 @@ const OnBoarding = () => {
         style={styles.image}
       >
         <View style={styles.opacityBackground} />
-        <Text style={styles.titleText}>E-boto</Text>
-        <Text style={styles.subTitleText}>Voting made effortless</Text>
+
+        <View style={styles.textWrapper}>
+          <Text style={styles.titleText}>E-boto</Text>
+          <Text style={styles.subTitleText}>Voting made effortless</Text>
+        </View>
+
         <TouchableOpacity style={styles.buttonContainer} onPress={votePress}>
-            <Text style={styles.buttonText}>Vote Now!</Text>
+          <Text style={styles.buttonText}>Vote Now!</Text>
         </TouchableOpacity>
       </ImageBackground>
     </View>
