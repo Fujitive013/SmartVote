@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import { API_BASE_URL } from "../../config/ApiConfig";
 import { homeStyles as styles } from "../../styles/HomeStyles";
-import VoteCounter from "./Home/components/VoteCounter";
-import QuickAccess from "./Home/components/QuickAccess";
-import OngoingElections from "./Home/components/OngoingElections";
+import VoteCounter from "../../components/Home/VoteCounter";
+import QuickAccess from "../../components/Home/QuickAccess";
+import OngoingElections from "../../components/Home/OngoingElections";
 import { fetchElections } from "../../services/elections";
+import getGreeting from "../../utils/greetings";
+import formatCurrentDate from "../../utils/dateUtils";
 
 const Home = () => {
   const [currentDate, setCurrentDate] = useState("");
@@ -52,32 +52,8 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const now = new Date();
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    setCurrentDate(now.toLocaleDateString("en-US", options));
+    setCurrentDate(formatCurrentDate());
   }, []);
-
-  const getGreeting = () => {
-    const now = new Date();
-    // Convert to Philippine Time (UTC+8)
-    const phTime = new Date(
-      now.toLocaleString("en-US", { timeZone: "Asia/Manila" })
-    );
-    const hour = phTime.getHours();
-
-    if (hour >= 5 && hour < 12) {
-      return "Good morning";
-    } else if (hour >= 12 && hour < 18) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
-    }
-  };
 
   return (
     <View style={styles.container}>

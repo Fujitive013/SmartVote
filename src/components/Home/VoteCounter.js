@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { homeStyles as styles } from "../../../../styles/HomeStyles";
+import { homeStyles as styles } from "../../styles/HomeStyles";
 
 const VoteCounter = ({ voteCount, totalElections }) => (
   <View style={styles.voteCounterContainer}>

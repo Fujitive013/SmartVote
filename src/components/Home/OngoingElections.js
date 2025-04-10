@@ -6,8 +6,8 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import ElectionList from "../../../../components/ElectionList";
-import { homeStyles as styles } from "../../../../styles/HomeStyles";
+import ElectionList from "../../components/ElectionList";
+import { homeStyles as styles } from "../../styles/HomeStyles";
 
 const { height, width } = Dimensions.get("window");
 

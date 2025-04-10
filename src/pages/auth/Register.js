@@ -3,6 +3,7 @@ import { API_BASE_URL } from "../../config/ApiConfig";
 import { Picker } from "@react-native-picker/picker";
 import { registerStyles as styles } from "../../styles/RegisterStyles";
 import { register } from "../../services/auth";
+import { fetchCitiesAll } from "../../services/auth";
 import {
   Text,
   View,
@@ -20,6 +21,7 @@ import {
   BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
 const Register = () => {
@@ -44,7 +46,7 @@ const Register = () => {
   const [showPasswordRequirements, setShowPasswordRequirements] =
     useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [fontsLoaded, setFontsLoaded] = useState(true); 
+  const [fontsLoaded, setFontsLoaded] = useState(true);
 
   // Password validation function
   const validatePassword = (pass) => {
@@ -65,16 +67,17 @@ const Register = () => {
   };
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/locations/fetchCitiesAll`)
-      .then((response) => response.json())
-      .then((data) => {
+    const loadCities = async () => {
+      try {
+        const data = await fetchCitiesAll();
         setCities(data);
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching cities:", error);
+      } catch (err) {
+        console.error("Error fetching cities:", err);
         setLoading(false);
-      });
+      }
+    };
+    loadCities();
   }, []);
 
   // When the city changes, update the barangay list
@@ -84,6 +87,10 @@ const Register = () => {
     setBarangays(city ? city.barangays : []);
     setSelectedBarangay("");
   };
+
+  const handleBarangayChange = (itemValue) => {
+    setSelectedBarangay(itemValue)
+  }
 
   const loginPress = () => {
     navigation.navigate("LoginNew");
@@ -363,36 +370,28 @@ const Register = () => {
               )}
 
               <Text style={styles.label}>Select City:</Text>
-              {loading ? (
-                <ActivityIndicator size="large" color="blue" />
-              ) : (
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedCities}
-                    onValueChange={handleCityChange}
-                    style={styles.picker}
-                  >
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedCities}
+                  onValueChange={handleCityChange}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select a City" value="" color="#bebebe" />
+                  {cities.map((city) => (
                     <Picker.Item
-                      label="Select a City"
-                      value=""
-                      color="#bebebe"
+                      key={city._id}
+                      label={city.name}
+                      value={city._id}
                     />
-                    {cities.map((city) => (
-                      <Picker.Item
-                        key={city._id}
-                        label={city.name}
-                        value={city._id}
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              )}
+                  ))}
+                </Picker>
+              </View>
 
               <Text style={styles.label}>Select Barangay:</Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={selectedBarangay}
-                  onValueChange={(itemValue) => setSelectedBarangay(itemValue)}
+                  onValueChange={handleBarangayChange}
                   style={styles.picker}
                   enabled={barangays.length > 0} // Disable if no barangays
                 >

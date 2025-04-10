@@ -13,12 +13,13 @@ import React, { useState, useEffect } from "react";
 import { fetchElectionsService } from "../../../services/elections";
 import LoadingScreen from "../../../components/LoadingScreen";
 
-const ViewCandidate = ({ route, cityId, barangayId }) => {
+const ViewCandidate = ({ route }) => {
   const [elections, setElections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("city");
+  const { cityId, barangayId } = route.params || {};
 
   useEffect(() => {
     console.log("✅ Received cityId:", cityId);

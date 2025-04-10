@@ -10,8 +10,6 @@ import React, { useState, useEffect } from "react";
 import { useCustomFonts } from "../../../assets/fonts/fonts";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/ApiConfig";
 import { storeUserData } from "../../utils/Storage";
 import { loginStyles as styles } from "../../styles/LoginStyles";
 import { login } from "../../services/auth";

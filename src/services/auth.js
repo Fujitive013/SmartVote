@@ -33,4 +33,13 @@ const register = async (first_name, last_name, email, password, city_id, barangg
   }
 };
 
-module.exports = { login, register }
+const fetchCitiesAll = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/locations/fetchCitiesAll`);
+    return response.data; // Return the response data
+  } catch (error) {
+    throw error.response?.data || "An unexpected error occurred.";
+  }
+}
+
+module.exports = { login, register, fetchCitiesAll }
