@@ -42,4 +42,17 @@ const fetchCitiesAll = async () => {
   }
 }
 
-module.exports = { login, register, fetchCitiesAll }
+const getElectionDetails = async (id, token) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/elections/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || "An unexpected error occurred.";
+  }
+};
+
+module.exports = { login, register, fetchCitiesAll, getElectionDetails }

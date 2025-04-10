@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -77,14 +77,14 @@ const VoteItem = ({
         // Navigate to Vote Details after a short delay
         setTimeout(() => {
           setSuccessModalVisible(false); // Close the success modal
-          navigation.navigate("Election Details", {
+          navigation.navigate("Vote Details", {
             candidateId: item._id,
             electionId: electionId,
             electionName: electionName,
             candidateName: item.name,
             candidateParty: item.party,
           });
-        }, 50000000000000); // Delay for 2 seconds
+        }, 2000); // Delay for 2 seconds
       } else if (response.status === 400) {
         Alert.alert(
           "Error",
@@ -107,9 +107,19 @@ const VoteItem = ({
     }
   };
 
+  useEffect(() => {
+    if (hasVoted) {
+      navigation.navigate("Vote Details", {
+        candidateId: selectedCandidate,
+        electionId: electionId,
+        electionName: electionName,
+      });
+    }
+  }, [hasVoted, navigation, selectedCandidate, electionId, electionName]);
+
   const handleVoteAgain = () => {
-    navigation.navigate("Dashboard Screen")
-  }
+    navigation.navigate("Dashboard Screen");
+  };
 
   return (
     <View style={styles.candidateContainer}>
@@ -197,7 +207,10 @@ const VoteItem = ({
               <Text style={styles.boldText}>{item.name}</Text> as the{" "}
               <Text style={styles.boldText}>{electionName}</Text>
             </Text>
-            <TouchableOpacity style={styles.voteAgainButton} onPress={handleVoteAgain}>
+            <TouchableOpacity
+              style={styles.voteAgainButton}
+              onPress={handleVoteAgain}
+            >
               <Text style={styles.voteAgainText}>Vote Again</Text>
             </TouchableOpacity>
           </View>

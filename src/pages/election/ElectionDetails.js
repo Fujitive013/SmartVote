@@ -214,3 +214,83 @@ const ElectionDetails = ({ route }) => {
 };
 
 export default ElectionDetails;
+
+
+
+  // const [votedElectionDetails, setVotedElectionDetails] = useState([]);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchVotedElectionDetails = async () => {
+  //     try {
+  //       const userData = await AsyncStorage.getItem("userData");
+  //       const token = await AsyncStorage.getItem("token"); // get token separately
+
+  //       const parsedUserData = JSON.parse(userData);
+  //       const votedElectionIds = parsedUserData?.voted_elections || [];
+
+  //       const electionDetails = await Promise.all(
+  //         votedElectionIds.map(async (id) => {
+  //           try {
+  //             const res = await axios.get(
+  //               `http://192.168.1.4:3000/elections/${id}`,
+  //               {
+  //                 headers: {
+  //                   Authorization: `Bearer ${token}`,
+  //                 },
+  //               }
+  //             );
+  //             return res.data;
+  //           } catch (err) {
+  //             console.log(
+  //               `Failed to fetch election with id: ${id}`,
+  //               err.message
+  //             );
+  //             return null; // handle failed request gracefully
+  //           }
+  //         })
+  //       );
+
+  //       setVotedElectionDetails(electionDetails.filter((e) => e)); // filter null values
+  //     } catch (error) {
+  //       console.error("Error fetching election details:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchVotedElectionDetails();
+  // }, []);
+
+  // if (loading) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <ActivityIndicator size="large" color="#0000ff" />
+  //     </View>
+  //   );
+  // }
+
+  {/* <FlatList
+        data={votedElectionDetails}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={{ marginBottom: 20 }}>
+            <Text style={styles.subHeaderText}>{item.name}</Text>
+            <Text>{item.description}</Text>
+
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              Candidates:
+            </Text>
+
+            {item.candidates.map((candidate) => (
+              <View
+                key={candidate._id}
+                style={{ marginLeft: 10, marginTop: 5 }}
+              >
+                <Text>Name: {candidate.name}</Text>
+                <Text>Party: {candidate.party}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      /> */}

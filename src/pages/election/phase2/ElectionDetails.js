@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { electionDetailsStyles as styles } from "../../../styles/electionDetails";
 import React, { useState, useEffect } from "react";
-import { API_BASE_URL } from "../../../config/ApiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "../../../utils/Storage";
 import {

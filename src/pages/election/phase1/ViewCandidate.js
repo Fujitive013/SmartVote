@@ -13,18 +13,27 @@ import React, { useState, useEffect } from "react";
 import { fetchElectionsService } from "../../../services/elections";
 import LoadingScreen from "../../../components/LoadingScreen";
 
-const ViewCandidate = ({ route }) => {
+const ViewCandidate = ({
+  route,
+  navigation,
+  cityId: propsCityId,
+  barangayId: propsBarangayId,
+}) => {
   const [elections, setElections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("city");
-  const { cityId, barangayId } = route.params || {};
+
+  // Get cityId and barangayId from either props or route.params
+  const routeParams = route?.params || {};
+  const cityId = propsCityId || routeParams.cityId;
+  const barangayId = propsBarangayId || routeParams.barangayId;
 
   useEffect(() => {
     console.log("✅ Received cityId:", cityId);
     console.log("✅ Received barangayId:", barangayId);
-  }, []);
+  }, [cityId, barangayId]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -151,7 +160,9 @@ const ViewCandidate = ({ route }) => {
             ) : error ? (
               <Text style={styles.errorIndicator}>{error}</Text>
             ) : (
-              <ElectionList elections={elections} />
+              <View style={{ maxHeight: 350 }}>
+                <ElectionList elections={elections} />
+              </View>
             )}
           </View>
         </View>
