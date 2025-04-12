@@ -12,9 +12,8 @@ import { voteDetailsStyles as styles } from "../../../styles/voteDetailStyles";
 import voteFlatList from "../../../styles/voteFlatList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getElectionDetails } from "../../../services/auth";
-import axios from "axios";
 
-const VoteDetails = ({ route, navigation }) => {
+const VoteDetails = () => {
   const [votedElectionDetails, setVotedElectionDetails] = useState([]);
   const [loading, setLoading] = useState(true);
 
