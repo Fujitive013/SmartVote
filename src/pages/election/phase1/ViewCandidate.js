@@ -1,12 +1,5 @@
 import ElectionList from "../../../components/ElectionList";
-import {
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { View, Image, Text, TouchableOpacity, TextInput } from "react-native";
 import { candidateStyles as styles } from "../../../styles/candidateStyles";
 import { getUserData } from "../../../utils/Storage";
 import React, { useState, useEffect } from "react";
@@ -24,6 +17,8 @@ const ViewCandidate = ({
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("city");
+  const [filteredElections, setFilteredElections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Get cityId and barangayId from either props or route.params
   const routeParams = route?.params || {};
@@ -63,6 +58,7 @@ const ViewCandidate = ({
     finalBarangayId
   ) => {
     try {
+      setLoading(true);
       setSelectedFilter(filterType);
 
       if (!finalCityId) {
@@ -76,10 +72,25 @@ const ViewCandidate = ({
       );
 
       setElections(data);
+      setFilteredElections(data);
     } catch (err) {
+      console.error("Election fetch error:", err);
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredElections(elections);
+    } else {
+      const lowerQuery = query.toLowerCase();
+      const filtered = elections.filter((election) =>
+        election.name?.toLowerCase().startsWith(lowerQuery)
+      );
+      setFilteredElections(filtered);
     }
   };
 
@@ -117,6 +128,9 @@ const ViewCandidate = ({
               <TextInput
                 placeholder="Search for an ongoing election"
                 style={styles.inputSearch}
+                value={searchQuery}
+                onChangeText={handleSearch}
+                autoCapitalize="none"
               />
             </View>
           </View>
@@ -163,7 +177,7 @@ const ViewCandidate = ({
               <Text style={styles.errorIndicator}>{error}</Text>
             ) : (
               <View style={{ maxHeight: 350 }}>
-                <ElectionList elections={elections} />
+                <ElectionList elections={filteredElections} />
               </View>
             )}
           </View>
