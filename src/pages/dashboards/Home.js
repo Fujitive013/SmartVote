@@ -17,6 +17,8 @@ const Home = () => {
   const [voteCount, setVoteCount] = useState(0);
   const [totalElections, setTotalElections] = useState(0);
   const navigation = useNavigation();
+  const [filteredElections, setFilteredElections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchUserData();
@@ -44,12 +46,29 @@ const Home = () => {
   const fetchElectionsData = async (cityId, barangayId) => {
     try {
       const combinedElections = await fetchElections(cityId, barangayId);
+      // const ongoingElections = combinedElections.filter(
+      //   (election) => election.status === "ongoing"
+      // ); SOON TO BE ADDED
       setElections(combinedElections);
+      setFilteredElections(combinedElections);
       setTotalElections(combinedElections.length);
     } catch (error) {
       console.error("Error fetching elections:", error);
     }
   };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredElections(elections);
+    } else {
+      const lowerQuery = query.toLowerCase();
+      const filtered = elections.filter((election) =>
+        election.name?.toLowerCase().startsWith(lowerQuery)
+      );
+      setFilteredElections(filtered);
+    }
+  }
 
   useEffect(() => {
     setCurrentDate(formatCurrentDate());
@@ -72,13 +91,16 @@ const Home = () => {
           style={styles.searchIcon}
         />
         <TextInput
-          placeholder="Search for a candidate"
+          placeholder="Search for ongoing elections"
           style={styles.inputSearch}
+          value={searchQuery}
+          onChangeText={handleSearch}
+          autoCapitalize="none"
         />
       </View>
       <QuickAccess />
       <OngoingElections
-        elections={elections}
+        elections={filteredElections}
         navigation={navigation}
         user={user}
       />
