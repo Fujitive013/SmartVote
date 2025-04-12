@@ -84,6 +84,13 @@ const electionDetailsStyles = StyleSheet.create({
     paddingLeft: height * 0.02,
     fontSize: 14,
   },
+  noResults: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 16,
+    color: "#6c757d",
+    textAlign: "center",
+    marginBottom: height * 0.3,
+  },
 });
 
 module.exports = { electionDetailsStyles };
