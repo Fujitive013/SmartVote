@@ -17,7 +17,7 @@ const candidateStyles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    top: height * 0.03,
+    top: height * 0.05,
   },
   subHeader: {
     marginBottom: height * 0.02,
@@ -28,8 +28,8 @@ const candidateStyles = StyleSheet.create({
     fontSize: 24,
   },
   backImage: {
-    width: height * 0.05,
-    height: height * 0.05,
+    width: height * 0.045,
+    height: height * 0.045,
   },
   phasesContainer: {
     flexDirection: "row",
