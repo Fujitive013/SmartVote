@@ -5,7 +5,7 @@ const { height, width } = Dimensions.get("window");
 const voteFlatList = StyleSheet.create({
   container: {
     width: width * 0.9,
-    top: height * 0.02,
+    top: height * 0.05,
   },
   subContainer: {
     backgroundColor: "#F5F5F5",
