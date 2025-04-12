@@ -108,15 +108,17 @@ const ViewCandidate = ({
               <View style={styles.phaseThree} />
             </View>
           </View>
-          <View style={styles.searchContainer}>
-            <Image
-              source={require("../../../../assets/images/search.png")}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              placeholder="Search for an ongoing election"
-              style={styles.inputSearch}
-            />
+          <View style={{ alignSelf: "center" }}>
+            <View style={styles.searchContainer}>
+              <Image
+                source={require("../../../../assets/images/search.png")}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                placeholder="Search for an ongoing election"
+                style={styles.inputSearch}
+              />
+            </View>
           </View>
           <View style={styles.filterLocation}>
             <TouchableOpacity
