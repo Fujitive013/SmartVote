@@ -83,15 +83,17 @@ const VoteDetails = ({ route, navigation }) => {
               </View>
             </View>
           </View>
-          <View style={styles.searchContainer}>
-            <Image
-              source={require("../../../../assets/images/search.png")}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              placeholder="Search for an ongoing election"
-              style={styles.inputSearch}
-            />
+          <View style={{ alignSelf: "center" }}>
+            <View style={styles.searchContainer}>
+              <Image
+                source={require("../../../../assets/images/search.png")}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                placeholder="Search for an ongoing election"
+                style={styles.inputSearch}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -102,19 +104,23 @@ const VoteDetails = ({ route, navigation }) => {
           <View style={voteFlatList.container}>
             <View style={voteFlatList.subContainer}>
               <Text style={voteFlatList.nameText}>{item.name}</Text>
-              <Text style={voteFlatList.descriptionText}>{item.description}</Text>
-
-              <Text style={voteFlatList.candidateText}>
-                Candidates:
+              <Text style={voteFlatList.descriptionText}>
+                {item.description}
               </Text>
+
+              <Text style={voteFlatList.candidateText}>Candidates:</Text>
 
               {item.candidates.map((candidate) => (
                 <View
                   key={candidate._id}
                   style={voteFlatList.candidateContainer}
                 >
-                  <Text style={voteFlatList.labelText}>Name: {candidate.name}</Text>
-                  <Text style={voteFlatList.labelText}>Party: {candidate.party}</Text>
+                  <Text style={voteFlatList.labelText}>
+                    Name: {candidate.name}
+                  </Text>
+                  <Text style={voteFlatList.labelText}>
+                    Party: {candidate.party}
+                  </Text>
                 </View>
               ))}
             </View>
