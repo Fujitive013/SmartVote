@@ -21,7 +21,6 @@ import {
   BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import validatePassword from "../../utils/passwordValidation";
 
