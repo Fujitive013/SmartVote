@@ -1,4 +1,4 @@
-// Password validation function
+// utils/passwordValidation.js
 const validatePassword = (pass) => {
   let criteria = 0;
 
@@ -16,4 +16,4 @@ const validatePassword = (pass) => {
   return false;
 };
 
-module.export = { validatePassword };
+export default validatePassword;
