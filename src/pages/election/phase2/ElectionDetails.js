@@ -124,7 +124,7 @@ const ElectionDetails = ({ route }) => {
               <View style={styles.phaseThree} />
             </View>
           </View>
-          <View style={{alignSelf: 'center'}}>
+          <View style={styles.mainContainer}>
             <View style={styles.searchContainer}>
               <Image
                 source={require("../../../../assets/images/search.png")}
