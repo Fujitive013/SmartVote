@@ -211,7 +211,7 @@ const homeStyles = StyleSheet.create({
     fontSize: 16,
     color: "#6c757d",
     textAlign: "center",
-    marginTop: 20,
+    marginTop: height * 0.04,
   },
   voteNowButton: {
     backgroundColor: "#4CAF50", // Green background
