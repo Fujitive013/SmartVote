@@ -68,7 +68,11 @@ const ElectionDetails = ({ route }) => {
         }
 
         // Fetch voting status
-        const votingStatus = await fetchVotingStatus(user.id, electionId, token);
+        const votingStatus = await fetchVotingStatus(
+          user.id,
+          electionId,
+          token
+        );
         setHasVoted(votingStatus.hasVoted);
         setSelectedCandidate(votingStatus.voteDetails?.candidate_id || null);
       } catch (err) {
@@ -120,15 +124,17 @@ const ElectionDetails = ({ route }) => {
               <View style={styles.phaseThree} />
             </View>
           </View>
-          <View style={styles.searchContainer}>
-            <Image
-              source={require("../../../../assets/images/search.png")}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              placeholder="Search for an ongoing election"
-              style={styles.inputSearch}
-            />
+          <View style={{alignSelf: 'center'}}>
+            <View style={styles.searchContainer}>
+              <Image
+                source={require("../../../../assets/images/search.png")}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                placeholder="Search for an ongoing election"
+                style={styles.inputSearch}
+              />
+            </View>
           </View>
         </View>
       </View>
