@@ -61,6 +61,9 @@ const candidateStyles = StyleSheet.create({
     width: height * 0.15,
     height: height * 0.01,
   },
+  mainContainer: {
+    alignSelf: 'center'
+  },
   searchContainer: {
     flexDirection: "row",
     width: width * 0.9,
