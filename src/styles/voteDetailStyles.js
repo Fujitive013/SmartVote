@@ -61,6 +61,9 @@ const voteDetailsStyles = StyleSheet.create({
     width: width * 0.29,
     height: height * 0.01,
   },
+  mainContainer: {
+    alignSelf: "center",
+  },
   searchContainer: {
     flexDirection: "row",
     width: width * 0.9,

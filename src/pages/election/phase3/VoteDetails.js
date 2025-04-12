@@ -83,7 +83,7 @@ const VoteDetails = ({ route, navigation }) => {
               </View>
             </View>
           </View>
-          <View style={{ alignSelf: "center" }}>
+          <View style={styles.mainContainer}>
             <View style={styles.searchContainer}>
               <Image
                 source={require("../../../../assets/images/search.png")}
