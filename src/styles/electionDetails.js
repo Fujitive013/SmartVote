@@ -25,7 +25,7 @@ const electionDetailsStyles = StyleSheet.create({
   subHeaderText: {
     fontFamily: "Montserrat-Bold",
     color: "#111B56",
-    fontSize: 24,
+    fontSize: 22,
   },
   backImage: {
     width: height * 0.045,
@@ -63,6 +63,7 @@ const electionDetailsStyles = StyleSheet.create({
   },
   mainContainer: {
     alignSelf: "center",
+    bottom: height * 0.02,
   },
   searchContainer: {
     flexDirection: "row",
