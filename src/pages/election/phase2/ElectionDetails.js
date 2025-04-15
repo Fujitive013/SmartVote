@@ -1,11 +1,5 @@
 import VoteList from "../../../components/VoteList";
-import {
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Image, Text, TouchableOpacity, TextInput } from "react-native";
 import { electionDetailsStyles as styles } from "../../../styles/electionDetails";
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -158,10 +152,32 @@ const ElectionDetails = ({ route, navigation }) => {
         electionName={election?.name}
         hasVoted={hasVoted}
         selectedCandidate={selectedCandidate}
-        onVote={(candidateId) => {
+        onVote={async (candidateId) => {
           console.log(`Voted for candidate ID: ${candidateId}`);
           setHasVoted(true);
           setSelectedCandidate(candidateId);
+
+          try {
+            const userDataString = await AsyncStorage.getItem("userData");
+            if (userDataString) {
+              const userData = JSON.parse(userDataString);
+
+              // Append the current election ID to the voted elections if not already included
+              if (!userData.voted_elections.includes(electionId)) {
+                userData.voted_elections.push(electionId);
+                await AsyncStorage.setItem(
+                  "userData",
+                  JSON.stringify(userData)
+                );
+                console.log("Updated userData in AsyncStorage:", userData);
+              }
+            }
+          } catch (error) {
+            console.error(
+              "Failed to update voted elections in AsyncStorage:",
+              error
+            );
+          }
         }}
       />
       {filteredCandidates.length === 0 && searchQuery && (
