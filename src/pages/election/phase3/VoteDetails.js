@@ -20,7 +20,7 @@ const VoteDetails = () => {
   const navigation = useNavigation();
 
   const handleBackPress = () => {
-    navigation.navigate('Home');
+    navigation.navigate('Dashboard Screen');
   };
 
   useEffect(() => {
