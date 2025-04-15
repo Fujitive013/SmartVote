@@ -12,10 +12,16 @@ import { voteDetailsStyles as styles } from "../../../styles/voteDetailStyles";
 import voteFlatList from "../../../styles/voteFlatList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getElectionDetails } from "../../../services/auth";
+import { useNavigation } from "@react-navigation/native";
 
 const VoteDetails = () => {
   const [votedElectionDetails, setVotedElectionDetails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+
+  const handleBackPress = () => {
+    navigation.navigate('Home');
+  };
 
   useEffect(() => {
     const fetchVotedElectionDetails = async () => {
@@ -64,7 +70,7 @@ const VoteDetails = () => {
       <View style={styles.subContainer}>
         <View style={styles.header}>
           <View style={styles.subHeader}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleBackPress}>
               <Image
                 source={require("../../../../assets/images/electionImages/back.png")}
                 style={styles.backImage}
