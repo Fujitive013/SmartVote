@@ -111,7 +111,7 @@ const ViewCandidate = ({
                 <View style={styles.phaseOne} />
                 <View style={styles.subPhaseOne}>
                   <Text style={styles.subPhaseOneText}>
-                    Select an going elections
+                    Select an ongoing election
                   </Text>
                 </View>
               </View>
