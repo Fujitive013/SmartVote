@@ -20,6 +20,11 @@ const ViewCandidate = ({
   const [filteredElections, setFilteredElections] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const backHandler = () => {
+    console.log("Back handler called!");
+    navigation.goBack();
+  }
+
   // Get cityId and barangayId from either props or route.params
   const routeParams = route?.params || {};
   const cityId = propsCityId || routeParams.cityId;
@@ -99,7 +104,7 @@ const ViewCandidate = ({
       <View style={styles.subContainer}>
         <View style={styles.header}>
           <View style={styles.subHeader}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={backHandler}>
               <Image
                 source={require("../../../../assets/images/electionImages/back.png")}
                 style={styles.backImage}
