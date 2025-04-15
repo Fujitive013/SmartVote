@@ -49,6 +49,9 @@ const Home = () => {
   const fetchElectionsData = async (cityId, barangayId) => {
     try {
       const combinedElections = await fetchElections(cityId, barangayId);
+      // const ongoingElections = combinedElections.filter(
+      //   (election) => election.status === "ongoing"
+      // ); SOON TO BE ADDED
       setElections(combinedElections);
       setFilteredElections(combinedElections);
       setTotalElections(combinedElections.length);
