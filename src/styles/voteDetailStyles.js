@@ -25,7 +25,7 @@ const voteDetailsStyles = StyleSheet.create({
   subHeaderText: {
     fontFamily: "Montserrat-Bold",
     color: "#111B56",
-    fontSize: 24,
+    fontSize: 22,
   },
   backImage: {
     width: height * 0.045,
