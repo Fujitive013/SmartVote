@@ -1,5 +1,5 @@
 import ElectionList from "../../../components/ElectionList";
-import { View, Image, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, Image, Text, TouchableOpacity, TextInput, BackHandler } from "react-native";
 import { candidateStyles as styles } from "../../../styles/candidateStyles";
 import { getUserData } from "../../../utils/Storage";
 import React, { useState, useEffect } from "react";
@@ -19,6 +19,18 @@ const ViewCandidate = ({
   const [selectedFilter, setSelectedFilter] = useState("city");
   const [filteredElections, setFilteredElections] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => {
+          return true; // Prevents default back navigation
+        }
+      );
+  
+      // Cleanup the event listener on component unmount
+      return () => backHandler.remove();
+    }, []);
 
   const backHandler = () => {
     console.log("Back handler called!");

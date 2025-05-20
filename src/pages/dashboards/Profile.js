@@ -1,13 +1,28 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, BackHandler } from "react-native";
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios"; // Ensure axios is installed
-import API_BASE_URL from "../../config/ApiConfig";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/ApiConfig";
+import { useNavigation } from "@react-navigation/native";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [cityName, setCityName] = useState("");
   const [barangayName, setBarangayName] = useState("");
+  const navigation = useNavigation();
+
+  // Prevent hardware back button navigation
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        return true; // Prevents default back navigation
+      }
+    );
+
+    // Cleanup back handler on unmount
+    return () => backHandler.remove();
+  }, []);
 
   const fetchCityNameAndBarangay = async (cityId, barangayId) => {
     try {
@@ -49,10 +64,28 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
+  // Logout function to clear AsyncStorage and navigate to Login
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("userData");
+      await AsyncStorage.removeItem("token");
+      navigation.replace("LoginNew");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  const getInitials = () => {
+    if (!user?.first_name || !user?.last_name) return "N/A";
+    return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        <View style={styles.profileContainer} />
+        <View style={styles.profileContainer}>
+          <Text style={styles.profileInitials}>{getInitials()}</Text>
+        </View>
         <View style={styles.infoContainer}>
           <Text style={styles.nameText}>
             {user?.first_name || "Loading..."}
@@ -68,6 +101,9 @@ const Profile = () => {
         <Text style={styles.infoText}>City: {cityName}</Text>
         <Text style={styles.infoText}>Barangay: {barangayName}</Text>
       </View>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -90,6 +126,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileInitials: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 36, // Large font for initials
+    color: "#FFFFFF", // White color for contrast
+    textAlign: "center",
   },
   infoContainer: {
     alignItems: "center",
@@ -118,5 +162,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5FCFF",
     borderRadius: 20,
     marginBottom: 10,
+  },
+  logoutButton: {
+    alignSelf: "center",
+    marginTop: 20,
+    backgroundColor: "#FF4D4D", // Red color for logout button
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  logoutButtonText: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 16,
+    color: "#FFFFFF",
+    textAlign: "center",
   },
 });
