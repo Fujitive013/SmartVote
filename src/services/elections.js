@@ -1,36 +1,13 @@
 import { API_BASE_URL } from "../config/ApiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const fetchElectionsService = async (cityId, barangayId, filterType) => {
-  let url = `${API_BASE_URL}/elections/getByLocation/${cityId}`;
-  if (filterType === "barangay" && barangayId) {
-    url += `/${barangayId}`;
-  } else {
-    url += `/null`;
-  }
-
-  const token = await AsyncStorage.getItem("token");
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(errorMessage);
-  }
-
-  return response.json();
-};
-
 export const fetchElections = async (cityId, barangayId) => {
   const token = await AsyncStorage.getItem("token");
   if (!token) {
     throw new Error("No token found");
   }
 
+  console.log("Fetching city elections from:", `${API_BASE_URL}/elections/getByLocation/${cityId}`);
   const cityElectionsResponse = await fetch(
     `${API_BASE_URL}/elections/getByLocation/${cityId}`,
     {
@@ -38,6 +15,7 @@ export const fetchElections = async (cityId, barangayId) => {
     }
   );
 
+  console.log("Fetching barangay elections from:", `${API_BASE_URL}/elections/getByLocation/${cityId}/${barangayId}`);
   const barangayElectionsResponse = await fetch(
     `${API_BASE_URL}/elections/getByLocation/${cityId}/${barangayId}`,
     {
@@ -45,12 +23,21 @@ export const fetchElections = async (cityId, barangayId) => {
     }
   );
 
-  if (!cityElectionsResponse.ok || !barangayElectionsResponse.ok) {
-    throw new Error("Failed to fetch elections");
+  if (!cityElectionsResponse.ok) {
+    console.error("City elections response:", cityElectionsResponse.status, await cityElectionsResponse.text());
+    throw new Error(`Failed to fetch city elections: ${cityElectionsResponse.status}`);
+  }
+
+  if (!barangayElectionsResponse.ok) {
+    console.error("Barangay elections response:", barangayElectionsResponse.status, await barangayElectionsResponse.text());
+    throw new Error(`Failed to fetch barangay elections: ${barangayElectionsResponse.status}`);
   }
 
   const cityElections = await cityElectionsResponse.json();
   const barangayElections = await barangayElectionsResponse.json();
+
+  console.log("City elections data:", cityElections);
+  console.log("Barangay elections data:", barangayElections);
 
   return [...cityElections, ...barangayElections];
 };

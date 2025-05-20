@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios"; // Make sure axios is installed
+import axios from "axios"; // Ensure axios is installed
 import API_BASE_URL from "../../config/ApiConfig";
 
 const Profile = () => {
@@ -13,29 +13,23 @@ const Profile = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       const res = await axios.get(
-        `http://192.168.1.3:3000/locations/fetchCities/${cityId}`,
+        `${API_BASE_URL}/locations/fetchCities/${cityId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       const cityData = res.data;
       setCityName(cityData.name);
-  
-      // Find barangay name in populated baranggays array
-      const barangayItem = cityData.baranggays.find(
-        (b) => b._id._id === barangayId
+
+      const barangayItem = cityData.barangays.find(
+        (b) => b._id === barangayId
       );
-  
-      if (barangayItem) {
-        setBarangayName(barangayItem._id.name);
-      } else {
-        setBarangayName("N/A");
-      }
+      setBarangayName(barangayItem ? barangayItem.name : "N/A");
     } catch (error) {
       console.error("Error fetching city and barangay:", error);
     }
   };
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -51,7 +45,7 @@ const Profile = () => {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
 
@@ -71,8 +65,8 @@ const Profile = () => {
           Full Name: {user?.first_name} {user?.last_name}
         </Text>
         <Text style={styles.infoText}>Role: {user?.role || "Voter"}</Text>
-        <Text style={styles.infoText}>City: {cityName || "Loading..."}</Text>
-        <Text style={styles.infoText}>Barangay: {user?.baranggay_id || "N/A"}</Text>
+        <Text style={styles.infoText}>City: {cityName}</Text>
+        <Text style={styles.infoText}>Barangay: {barangayName}</Text>
       </View>
     </View>
   );
