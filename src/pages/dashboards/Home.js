@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image } from "react-native";
+import { View, Text, TextInput, Image, BackHandler } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { homeStyles as styles } from "../../styles/HomeStyles";
@@ -19,6 +19,18 @@ const Home = () => {
   const navigation = useNavigation();
   const [filteredElections, setFilteredElections] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        return true; // Prevents default back navigation
+      }
+    );
+
+    // Cleanup the event listener on component unmount
+    return () => backHandler.remove();
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -56,7 +68,7 @@ const Home = () => {
       setFilteredElections(combinedElections);
       setTotalElections(combinedElections.length);
     } catch (error) {
-      console.error("Error fetching elections:", error);
+      console.log("Error fetching elections:", error);
     }
   };
 
