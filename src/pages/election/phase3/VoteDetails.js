@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TextInput,
+  BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { voteDetailsStyles as styles } from "../../../styles/voteDetailStyles";
@@ -19,44 +20,74 @@ const VoteDetails = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
+  // Handle hardware back button press
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        // Return true to prevent default back navigation
+        return true;
+      }
+    );
+
+    // Cleanup the event listener on component unmount
+    return () => backHandler.remove();
+  }, []);
+
   const handleBackPress = () => {
-    navigation.navigate('Dashboard Screen');
+    navigation.navigate("Dashboard Screen");
   };
 
+  // Fetch election details and set up polling
   useEffect(() => {
+    let isMounted = true; // To prevent state updates on unmounted component
+
     const fetchVotedElectionDetails = async () => {
       try {
         const userData = await AsyncStorage.getItem("userData");
-        const token = await AsyncStorage.getItem("token"); // get token separately
+        const token = await AsyncStorage.getItem("token");
 
-        const parsedUserData = JSON.parse(userData);
-        const votedElectionIds = parsedUserData?.voted_elections || [];
+        if (userData && token) {
+          const parsedUserData = JSON.parse(userData);
+          const votedElectionIds = parsedUserData?.voted_elections || [];
 
-        const electionDetails = await Promise.all(
-          votedElectionIds.map(async (id) => {
-            try {
-              const data = await getElectionDetails(id, token);
-              return data;
-            } catch (err) {
-              console.log(
-                `Failed to fetch election with id: ${id}`,
-                err.message
-              );
-              return null; // handle failed request gracefully
-            }
-          })
-        );
+          const electionDetails = await Promise.all(
+            votedElectionIds.map(async (id) => {
+              try {
+                const data = await getElectionDetails(id, token);
+                return data;
+              } catch (err) {
+                console.log(`Failed to fetch election with id: ${id}`, err.message);
+                return null; // handle failed request gracefully
+              }
+            })
+          );
 
-        setVotedElectionDetails(electionDetails.filter((e) => e)); // filter null values
+          if (isMounted) {
+            setVotedElectionDetails(electionDetails.filter((e) => e)); // filter null values
+          }
+        }
       } catch (error) {
         console.error("Error fetching election details:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
+    // Initial fetch
     fetchVotedElectionDetails();
-  }, []);
+
+    // Set up polling every 5 seconds (adjust interval as needed)
+    const intervalId = setInterval(fetchVotedElectionDetails, 100);
+
+    // Cleanup interval on component unmount
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, []); // Empty dependency array ensures this runs only on mount/unmount
 
   if (loading) {
     return (
