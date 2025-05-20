@@ -118,7 +118,11 @@ const VoteItem = ({
   }, [hasVoted, navigation, selectedCandidate, electionId, electionName]);
 
   const handleVoteAgain = () => {
-    navigation.navigate("Dashboard Screen");
+    // Delay navigation by 10 seconds
+    setTimeout(() => {
+      setSuccessModalVisible(false); // Close the success modal
+      navigation.navigate("Dashboard Screen");
+    }, 10000); // 10-second delay
   };
 
   return (
@@ -193,7 +197,6 @@ const VoteItem = ({
         animationType="fade"
         transparent={true}
         visible={successModalVisible}
-        onRequestClose={() => setSuccessModalVisible(false)} // Close modal on back press
       >
         <View style={styles.modalOverlay}>
           <View style={styles.successModalContainer}>
