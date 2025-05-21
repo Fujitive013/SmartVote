@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useCustomFonts } from "../../../assets/fonts/fonts";
@@ -22,10 +23,45 @@ const LoginNew = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Prevent hardware back button navigation
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        return true; // Prevents default back navigation
+      }
+    );
+
+    // Cleanup back handler on unmount
+    return () => backHandler.remove();
+  }, []);
+
+  const validateInputs = () => {
+    if (!email || !password) {
+      setErrorMessage("Please fill in all fields.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Invalid email format.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return false;
+    }
+
+    setErrorMessage(""); // Clear previous errors
+    return true;
+  };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields.");
+    // Validate inputs before proceeding
+    if (!validateInputs()) {
       return;
     }
 
@@ -37,21 +73,20 @@ const LoginNew = () => {
       if (response?.message === "Login successful") {
         const token = response.token?.replace("Bearer ", "").trim();
         await storeUserData(response.user, token);
-
-        Alert.alert("Success", "Login successful!");
         navigation.navigate("Dashboard Screen");
       } else {
-        Alert.alert(
-          "Login failed",
-          response?.error || "Invalid credentials."
-        );
+        const message = response?.error || "Invalid credentials.";
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(""), 3000);
       }
     } catch (error) {
-      console.error("Error:", error);
-      Alert.alert(
-        "Login failed",
-        error.response?.error || "An unexpected error occurred."
-      );
+      const message =
+        error.response?.data?.error || "Invalid email or password.";
+      setErrorMessage(message);
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000);
     }
   };
 
@@ -101,6 +136,11 @@ const LoginNew = () => {
             />
           </TouchableOpacity>
         </View>
+        {errorMessage ? (
+          <View style={{ alignSelf: "center", top: 5 }}>
+            <Text style={{ color: "red", top: 5 }}>{errorMessage}</Text>
+          </View>
+        ) : null}
         <TouchableOpacity
           style={styles.continueContainer}
           onPress={handleLogin}
