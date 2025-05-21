@@ -11,116 +11,122 @@ import getGreeting from "../../utils/greetings";
 import formatCurrentDate from "../../utils/dateUtils";
 
 const Home = () => {
-  const [currentDate, setCurrentDate] = useState("");
-  const [elections, setElections] = useState([]);
-  const [user, setUser] = useState(null);
-  const [voteCount, setVoteCount] = useState(0);
-  const [totalElections, setTotalElections] = useState(0);
-  const navigation = useNavigation();
-  const [filteredElections, setFilteredElections] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+    const [currentDate, setCurrentDate] = useState("");
+    const [elections, setElections] = useState([]);
+    const [user, setUser] = useState(null);
+    const [voteCount, setVoteCount] = useState(0);
+    const [totalElections, setTotalElections] = useState(0);
+    const navigation = useNavigation();
+    const [filteredElections, setFilteredElections] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        return true; // Prevents default back navigation
-      }
-    );
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            () => true // Prevent default back navigation
+        );
 
-    // Cleanup the event listener on component unmount
-    return () => backHandler.remove();
-  }, []);
+        return () => backHandler.remove();
+    }, []);
 
-  useEffect(() => {
-    const loadData = async () => {
-      await fetchUserData(); // load user
+    useEffect(() => {
+        const loadData = async () => {
+            await fetchUserData();
+        };
+        loadData();
+    }, []);
+
+    useEffect(() => {
+        if (user?.city_id && user?.baranggay_id) {
+            fetchElectionsData(user.city_id, user.baranggay_id);
+        }
+    }, [user]);
+
+    const fetchUserData = async () => {
+        try {
+            const userData = await AsyncStorage.getItem("userData");
+            if (userData) {
+                const parsedData = JSON.parse(userData);
+                setUser(parsedData);
+                setVoteCount(parsedData.voted_elections?.length || 0);
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
     };
-    loadData();
-  }, []);
 
-  useEffect(() => {
-    if (user?.city_id && user?.baranggay_id) {
-      fetchElectionsData(user.city_id, user.baranggay_id);
-    }
-  }, [user]);
+    const fetchElectionsData = async (cityId, barangayId) => {
+        try {
+            const combinedElections = await fetchElections(cityId, barangayId);
 
-  const fetchUserData = async () => {
-    try {
-      const userData = await AsyncStorage.getItem("userData");
-      if (userData) {
-        const parsedData = JSON.parse(userData);
-        setUser(parsedData);
-        setVoteCount(parsedData.voted_elections?.length || 0);
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
+            // ✅ Deduplicate elections by _id
+            const uniqueElections = Array.from(
+                new Map(combinedElections.map((e) => [e._id, e])).values()
+            );
 
-  const fetchElectionsData = async (cityId, barangayId) => {
-    try {
-      const combinedElections = await fetchElections(cityId, barangayId);
-      // const ongoingElections = combinedElections.filter(
-      //   (election) => election.status === "ongoing"
-      // ); SOON TO BE ADDED
-      setElections(combinedElections);
-      setFilteredElections(combinedElections);
-      setTotalElections(combinedElections.length);
-    } catch (error) {
-      console.log("Error fetching elections:", error);
-    }
-  };
+            setElections(uniqueElections);
+            setFilteredElections(uniqueElections);
+            setTotalElections(uniqueElections.length);
+        } catch (error) {
+            console.log("Error fetching elections:", error);
+        }
+    };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    if (query.trim() === "") {
-      setFilteredElections(elections);
-    } else {
-      const lowerQuery = query.toLowerCase();
-      const filtered = elections.filter((election) =>
-        election.name?.toLowerCase().startsWith(lowerQuery)
-      );
-      setFilteredElections(filtered);
-    }
-  };
+    const handleSearch = (query) => {
+        setSearchQuery(query);
+        if (query.trim() === "") {
+            setFilteredElections(elections);
+        } else {
+            const lowerQuery = query.toLowerCase();
+            const filtered = elections.filter((election) =>
+                election.name?.toLowerCase().startsWith(lowerQuery)
+            );
+            setFilteredElections(filtered);
+        }
+    };
 
-  useEffect(() => {
-    setCurrentDate(formatCurrentDate());
-  }, []);
+    useEffect(() => {
+        setCurrentDate(formatCurrentDate());
+    }, []);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.subContainer}>
-        <View style={styles.textWrapper}>
-          <Text style={styles.date}>{currentDate}</Text>
-          <Text style={styles.greetingsText}>
-            {getGreeting()}, {user?.first_name}!
-          </Text>
+    return (
+        <View style={styles.container}>
+            <View style={styles.subContainer}>
+                <View style={styles.textWrapper}>
+                    <Text style={styles.date}>{currentDate}</Text>
+                    <Text style={styles.greetingsText}>
+                        {getGreeting()}, {user?.first_name}!
+                    </Text>
+                </View>
+                <VoteCounter
+                    voteCount={voteCount}
+                    totalElections={totalElections}
+                />
+            </View>
+
+            <View style={styles.searchContainer}>
+                <Image
+                    source={require("../../../assets/images/search.png")}
+                    style={styles.searchIcon}
+                />
+                <TextInput
+                    placeholder="Search for ongoing elections"
+                    style={styles.inputSearch}
+                    value={searchQuery}
+                    onChangeText={handleSearch}
+                    autoCapitalize="none"
+                />
+            </View>
+
+            <QuickAccess />
+
+            <OngoingElections
+                elections={filteredElections}
+                navigation={navigation}
+                user={user}
+            />
         </View>
-        <VoteCounter voteCount={voteCount} totalElections={totalElections} />
-      </View>
-      <View style={styles.searchContainer}>
-        <Image
-          source={require("../../../assets/images/search.png")}
-          style={styles.searchIcon}
-        />
-        <TextInput
-          placeholder="Search for ongoing elections"
-          style={styles.inputSearch}
-          value={searchQuery}
-          onChangeText={handleSearch}
-          autoCapitalize="none"
-        />
-      </View>
-      <QuickAccess />
-      <OngoingElections
-        elections={filteredElections}
-        navigation={navigation}
-        user={user}
-      />
-    </View>
-  );
+    );
 };
 
 export default Home;
