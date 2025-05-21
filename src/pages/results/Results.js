@@ -12,51 +12,84 @@ const Results = () => {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchResults = async () => {
+    const getUserData = async () => {
+        try {
+            const user = await AsyncStorage.getItem("userData");
+            return user ? JSON.parse(user) : null;
+        } catch (error) {
+            console.error("Error retrieving user data:", error);
+            return null;
+        }
+    };
+
+    const getToken = async () => {
+        try {
+            const token = await AsyncStorage.getItem("token");
+            return token;
+        } catch (error) {
+            console.error("Error getting token:", error);
+            return null;
+        }
+    };
+
+    const fetchResults = async () => {
+        try {
             setLoading(true);
-            const elections = [
-                {
-                    id: "1",
-                    name: "Presidential Election 2025",
-                    candidates: [
-                        { id: "a1", name: "Maria Dela Cruz" },
-                        { id: "b2", name: "Juan Dela Cruz" },
-                    ],
+            const token = await getToken();
+            const user = await getUserData();
+
+            if (!token || !user) {
+                console.warn("Missing token or user data.");
+                setLoading(false);
+                return;
+            }
+
+            const { baranggay_id, city_id } = user;
+
+            const electionsRes = await fetch("https://smart-vote-backend.vercel.app/elections", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
-                {
-                    id: "2",
-                    name: "Local Barangay Election",
-                    candidates: [
-                        { id: "c3", name: "Diana Penduko" },
-                        { id: "d4", name: "Pedro Penduko" },
-                    ],
-                },
-            ];
+            });
+
+            const elections = await electionsRes.json();
+
+            // ✅ Updated logic: include barangay-specific and city-wide elections
+            const filteredElections = elections.filter(
+                (e) =>
+                    e.city_id === city_id &&
+                    (e.baranggay_id === baranggay_id || e.baranggay_id === null || e.baranggay_id === undefined)
+            );
 
             const resultsData = [];
 
-            for (const election of elections) {
-                const storedVotes = await AsyncStorage.getItem(
-                    `voteCounts_${election.id}`
+            for (const election of filteredElections) {
+                const res = await fetch(
+                    `https://smart-vote-backend.vercel.app/elections/results/${election._id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
                 );
-                const voteCounts = storedVotes ? JSON.parse(storedVotes) : {};
 
-                const electionResults = {
+                const result = await res.json();
+
+                resultsData.push({
                     name: election.name,
-                    candidates: election.candidates.map((candidate) => ({
-                        name: candidate.name,
-                        votes: voteCounts[candidate.id] || 0,
-                    })),
-                };
-
-                resultsData.push(electionResults);
+                    candidates: result.candidates || [],
+                });
             }
 
             setResults(resultsData);
+        } catch (error) {
+            console.error("Error fetching results:", error);
+        } finally {
             setLoading(false);
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchResults();
     }, []);
 
@@ -72,27 +105,30 @@ const Results = () => {
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.title}>Election Results</Text>
-            {results.map((election, index) => (
-                <View key={index} style={styles.electionContainer}>
-                    <Text style={styles.electionTitle}>{election.name}</Text>
-                    {election.candidates.map((candidate, idx) => (
-                        <View key={idx} style={styles.candidateItem}>
-                            <Text style={styles.candidateName}>
-                                {candidate.name}
-                            </Text>
-                            <Text style={styles.voteCount}>
-                                {candidate.votes} votes
-                            </Text>
-                        </View>
-                    ))}
-                </View>
-            ))}
+            {results.length === 0 ? (
+                <Text style={{ textAlign: "center", color: "#888", marginTop: 20 }}>
+                    No results available for your city and barangay.
+                </Text>
+            ) : (
+                results.map((election, index) => (
+                    <View key={index} style={styles.electionContainer}>
+                        <Text style={styles.electionTitle}>{election.name}</Text>
+                        {election.candidates.map((candidate, idx) => (
+                            <View key={idx} style={styles.candidateItem}>
+                                <Text style={styles.candidateName}>{candidate.name}</Text>
+                                <Text style={styles.voteCount}>{candidate.votes} votes</Text>
+                            </View>
+                        ))}
+                    </View>
+                ))
+            )}
         </ScrollView>
     );
 };
 
 export default Results;
 
+// --- Styles ---
 const styles = StyleSheet.create({
     container: {
         flex: 1,
