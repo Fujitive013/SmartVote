@@ -62,7 +62,10 @@ const VoteDetails = () => {
                 const data = await getElectionDetails(id, token);
                 return data;
               } catch (err) {
-                console.log(`Failed to fetch election with id: ${id}`, err.message);
+                console.log(
+                  `Failed to fetch election with id: ${id}`,
+                  err.message
+                );
                 return null; // Handle failed request gracefully
               }
             })
@@ -85,7 +88,7 @@ const VoteDetails = () => {
     fetchVotedElectionDetails();
 
     // Set up polling every 5 seconds
-    intervalRef.current = setInterval(fetchVotedElectionDetails, 5000);
+    intervalRef.current = setInterval(fetchVotedElectionDetails, 1000);
 
     // Cleanup interval on component unmount
     return () => {
@@ -153,20 +156,33 @@ const VoteDetails = () => {
                 {item.description}
               </Text>
               <Text style={voteFlatList.candidateText}>Candidates:</Text>
-              {item.candidates.map((candidate) => (
-                <View
-                  key={candidate._id}
-                  style={voteFlatList.candidateContainer}
-                >
-                  <Text style={voteFlatList.labelText}>
-                    Name: {candidate.name}
-                  </Text>
-                  <Text style={voteFlatList.labelText}>
-                    Party: {candidate.party}
-                  </Text>
-                </View>
-              ))}
+              {item.candidates && item.candidates.length > 0 ? (
+                item.candidates.map((candidate) => (
+                  <View
+                    key={candidate._id}
+                    style={voteFlatList.candidateContainer}
+                  >
+                    <Text style={voteFlatList.labelText}>
+                      Name: {candidate.name}
+                    </Text>
+                    <Text style={voteFlatList.labelText}>
+                      Party: {candidate.party}
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noVoteText}>
+                  You haven't voted any candidate yet
+                </Text>
+              )}
             </View>
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              You haven't voted in any election yet
+            </Text>
           </View>
         )}
       />
