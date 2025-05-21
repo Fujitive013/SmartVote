@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity, BackHandler } from "react-native";
-import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useState, useEffect,  } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/ApiConfig";
 import { useNavigation } from "@react-navigation/native";
+import { API_BASE_URL } from "../../config/ApiConfig"
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -11,68 +11,44 @@ const Profile = () => {
   const [barangayName, setBarangayName] = useState("");
   const navigation = useNavigation();
 
-  // Prevent hardware back button navigation
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        return true; // Prevents default back navigation
-      }
-    );
-
-    // Cleanup back handler on unmount
-    return () => backHandler.remove();
-  }, []);
-
+  // Fetch user data and location names
   const fetchCityNameAndBarangay = async (cityId, barangayId) => {
     try {
       const token = await AsyncStorage.getItem("token");
       const res = await axios.get(
         `${API_BASE_URL}/locations/fetchCities/${cityId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       const cityData = res.data;
       setCityName(cityData.name);
-
-      const barangayItem = cityData.barangays.find(
-        (b) => b._id === barangayId
-      );
-      setBarangayName(barangayItem ? barangayItem.name : "N/A");
+      const barangay = cityData.barangays.find((b) => b._id === barangayId);
+      setBarangayName(barangay ? barangay.name : "N/A");
     } catch (error) {
-      console.error("Error fetching city and barangay:", error);
+      console.error("Error fetching city/Barangay:", error);
     }
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUser = async () => {
       try {
-        const userData = await AsyncStorage.getItem("userData");
-        if (userData) {
-          const parsedData = JSON.parse(userData);
-          setUser(parsedData);
-          if (parsedData.city_id && parsedData.baranggay_id) {
-            fetchCityNameAndBarangay(parsedData.city_id, parsedData.baranggay_id);
+        const dataStr = await AsyncStorage.getItem("userData");
+        if (dataStr) {
+          const parsed = JSON.parse(dataStr);
+          setUser(parsed);
+          if (parsed.city_id && parsed.baranggay_id) {
+            fetchCityNameAndBarangay(parsed.city_id, parsed.baranggay_id);
           }
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     };
-
-    fetchUserData();
+    fetchUser();
   }, []);
 
-  // Logout function to clear AsyncStorage and navigate to Login
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userData");
-      await AsyncStorage.removeItem("token");
-      navigation.replace("LoginNew");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+    await AsyncStorage.clear();
+    navigation.replace("LoginNew");
   };
 
   const getInitials = () => {
@@ -82,27 +58,37 @@ const Profile = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.subContainer}>
-        <View style={styles.profileContainer}>
-          <Text style={styles.profileInitials}>{getInitials()}</Text>
+      {/* Profile picture */}
+      <View style={styles.profileCircle}>
+        <Text style={styles.initials}>{getInitials()}</Text>
+      </View>
+      {/* User name and role */}
+      <Text style={styles.name}>{user?.first_name || "Loading..."}</Text>
+      <Text style={styles.role}>{user?.role || "Voter"}</Text>
+
+      {/* Info cards */}
+      <View style={styles.infoCardsContainer}>
+        <View style={styles.infoCard}>
+          <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.value}>{user?.first_name} {user?.last_name}</Text>
         </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.nameText}>
-            {user?.first_name || "Loading..."}
-          </Text>
-          <Text style={styles.roleText}>{user?.role || "Voter"}</Text>
+        <View style={styles.infoCard}>
+          <Text style={styles.label}>Role</Text>
+          <Text style={styles.value}>{user?.role || "Voter"}</Text>
+        </View>
+        <View style={styles.infoCard}>
+          <Text style={styles.label}>City</Text>
+          <Text style={styles.value}>{cityName}</Text>
+        </View>
+        <View style={styles.infoCard}>
+          <Text style={styles.label}>Barangay</Text>
+          <Text style={styles.value}>{barangayName}</Text>
         </View>
       </View>
-      <View style={styles.informationContainer}>
-        <Text style={styles.infoText}>
-          Full Name: {user?.first_name} {user?.last_name}
-        </Text>
-        <Text style={styles.infoText}>Role: {user?.role || "Voter"}</Text>
-        <Text style={styles.infoText}>City: {cityName}</Text>
-        <Text style={styles.infoText}>Barangay: {barangayName}</Text>
-      </View>
+
+      {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -112,69 +98,78 @@ export default Profile;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  subContainer: {
-    flex: 0.3,
-    justifyContent: "center",
+    flex: 0.27,
+    backgroundColor: "#eef2f3",
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
+    padding: 20,
     borderRadius: 20,
   },
-  profileContainer: {
+  profileCircle: {
+    marginTop: 20,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: "#111B56",
-    width: 100,
-    height: 100,
-    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#FFF",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  profileInitials: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 36, // Large font for initials
-    color: "#FFFFFF", // White color for contrast
-    textAlign: "center",
+  initials: {
+    fontSize: 40,
+    color: "#F2F2F2",
+    fontWeight: "bold",
   },
-  infoContainer: {
-    alignItems: "center",
+  name: {
+    marginTop: 16,
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#222",
   },
-  nameText: {
-    top: 10,
-    fontFamily: "Montserrat-Bold",
+  role: {
     fontSize: 16,
+    color: "#555",
   },
-  roleText: {
-    top: 10,
-    fontFamily: "Montserrat-Regular",
-    fontSize: 14,
+  infoCardsContainer: {
+    marginTop: 30,
+    width: "100%",
   },
-  informationContainer: {
-    alignSelf: "center",
-    top: 10,
-    flex: 0.3,
-    borderRadius: 20,
-    width: "80%",
+  infoCard: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  infoText: {
-    fontFamily: "Montserrat-Medium",
+  label: {
+    fontSize: 13,
+    color: "#999",
+    fontWeight: "600",
+  },
+  value: {
+    marginTop: 6,
     fontSize: 16,
-    padding: 10,
-    backgroundColor: "#F5FCFF",
-    borderRadius: 20,
-    marginBottom: 10,
+    color: "#222",
+    fontWeight: "500",
   },
   logoutButton: {
-    alignSelf: "center",
-    marginTop: 20,
-    backgroundColor: "#FF4D4D", // Red color for logout button
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    marginTop: 40,
+    backgroundColor: "#e53935",
+    paddingVertical: 14,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    elevation: 4,
   },
-  logoutButtonText: {
-    fontFamily: "Montserrat-Bold",
+  logoutText: {
+    color: "#fff",
     fontSize: 16,
-    color: "#FFFFFF",
-    textAlign: "center",
+    fontWeight: "700",
   },
 });
