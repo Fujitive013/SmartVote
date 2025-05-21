@@ -8,9 +8,9 @@ const login = async (email, password) => {
       email,
       password,
     });
-    return response.data; // Return the response data
+    return response.data;
   } catch (error) {
-    throw error.response?.data || "An unexpected error occurred.";
+    throw new Error(error.response?.data?.error || "Invalid email or password.");
   }
 };
 
