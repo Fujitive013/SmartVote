@@ -84,6 +84,22 @@ const voteDetailsStyles = StyleSheet.create({
     paddingLeft: height * 0.02,
     fontSize: 14,
   },
+  noVoteText: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#888",
+    marginTop: 8,
+    textAlign: "center",
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#888",
+  },
 });
 
 module.exports = { voteDetailsStyles };
