@@ -18,6 +18,7 @@ const Results = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedElection, setSelectedElection] = useState(null);
   const [candidates, setCandidates] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [locationIds, setLocationIds] = useState({
     city_id: null,
     baranggay_id: null,
@@ -139,7 +140,6 @@ const Results = () => {
 
   const fetchResults = async () => {
     try {
-      setLoading(true);
       const token = await getToken();
       const user = await getUserData();
 
@@ -223,7 +223,13 @@ const Results = () => {
   };
 
   useEffect(() => {
-    getUserData().then(() => fetchResults());
+    // Start polling
+    const intervalId = setInterval(() => {
+      fetchResults();
+    }, 3000); // 3000 ms = 3 seconds
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
