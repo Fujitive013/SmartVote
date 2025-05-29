@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "SmartVote",
-    "slug": "SmartVote",
+    "name": "E-Boto",
+    "slug": "E-Boto",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,7 +20,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fujitive013.SmartVote"
+      "package": "com.fujitive013.EBoto"
     },
     "web": {
       "favicon": "./assets/favicon.png"

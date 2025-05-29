@@ -1,6 +1,6 @@
-# SmartVote
+# E-Boto
 
-SmartVote is a modern voting application designed to provide a secure, user-friendly, and efficient platform for managing elections and voting processes. Built with React Native, it offers a seamless experience for both voters and administrators.
+E-Boto is a modern voting application designed to provide a secure, user-friendly, and efficient platform for managing elections and voting processes. Built with React Native, it offers a seamless experience for both voters and administrators.
 
 ## Features
 
@@ -40,7 +40,7 @@ package.json      # Project metadata and dependencies
 1. Clone the repository:
     ```sh
     git clone <repo-url>
-    cd SmartVote
+    cd E-Boto
     ```
 2. Install dependencies:
     ```sh
@@ -50,10 +50,12 @@ package.json      # Project metadata and dependencies
     ```
 3. Start the development server:
     ```sh
-    npm start
-    # or
-    yarn start
+    npx expo start
     ```
+4. To run the app on your mobile device using Expo Go:
+    - Download the Expo Go app from the App Store (iOS) or Google Play Store (Android).
+    - Run `npx expo start` in your project directory.
+    - Scan the QR code displayed in your terminal or browser using the Expo Go app.
 
 ## Environment Variables
 
